@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>语跃 LinguaLeap · 沉浸式多语种学习平台</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>">
+<style>
+:root{
+  --p1:#6366f1; --p2:#8b5cf6; --p3:#ec4899;
+  --bg:#f3f5fb; --card:#ffffff; --ink:#1e2245; --sub:#69708c; --line:#e8eaf3;
+  --ok:#10b981; --okbg:#e7f9f1; --warn:#f59e0b; --warnbg:#fef4e2; --bad:#ef4444; --badbg:#fdecec;
+  --side1:#1d2040; --side2:#2b2f6e;
+  --sh:0 8px 24px rgba(30,34,80,.08); --sh2:0 12px 32px rgba(30,34,80,.14);
+  --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans",sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+.hidden{display:none!important}
+.muted{color:var(--sub)}
+.small{font-size:12.5px}
+.divider{height:1px;background:var(--line);margin:14px 0}
+a{color:var(--p1);text-decoration:none}
+
+/* ---------- 按钮与表单 ---------- */
+.btn{border:none;border-radius:12px;padding:11px 20px;font-size:14.5px;font-weight:600;cursor:pointer;transition:.16s;display:inline-flex;align-items:center;gap:7px;justify-content:center}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;box-shadow:0 6px 16px rgba(99,102,241,.35)}
+.btn.pri:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(99,102,241,.42)}
+.btn.soft{background:#eef0ff;color:#4c51d8}
+.btn.soft:hover{background:#e3e6ff}
+.btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+.btn.ghost:hover{border-color:#c9cdf0}
+.btn.danger{background:var(--badbg);color:var(--bad)}
+.btn.sm{padding:7px 14px;font-size:13px;border-radius:10px}
+.btn.lg{padding:14px 28px;font-size:16px;border-radius:14px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;font-size:14.5px;outline:none;transition:.15s;background:#fff;color:var(--ink)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--p1);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.field textarea{resize:vertical;min-height:88px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:7px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:13.5px;cursor:pointer;transition:.15s;user-select:none}
+.chip:hover{border-color:#c9cdf0}
+.chip.on{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(99,102,241,.3)}
+
+/* ---------- 登录页 ---------- */
+#auth-view{min-height:100vh;display:flex}
+.auth-left{flex:1.15;position:relative;overflow:hidden;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 48%,#c026d3 100%);display:flex;flex-direction:column;justify-content:center;padding:60px;color:#fff}
+.auth-left::before,.auth-left::after{content:"";position:absolute;border-radius:50%;filter:blur(10px);opacity:.35}
+.auth-left::before{width:420px;height:420px;background:#fff;top:-140px;right:-120px}
+.auth-left::after{width:300px;height:300px;background:#f0abfc;bottom:-100px;left:-80px}
+.brand{display:flex;align-items:center;gap:12px;font-size:26px;font-weight:800;letter-spacing:.5px;z-index:2}
+.brand .logo{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-size:28px}
+.auth-slogan{font-size:40px;font-weight:800;line-height:1.3;margin:34px 0 16px;z-index:2}
+.auth-desc{font-size:16.5px;opacity:.92;line-height:1.9;max-width:520px;z-index:2}
+.auth-feats{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:540px;z-index:2}
+.auth-feat{background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:12px 16px;font-size:14px;display:flex;gap:9px;align-items:center}
+.float-chip{position:absolute;padding:9px 18px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);font-weight:700;font-size:15px;animation:floatY 4.5s ease-in-out infinite alternate;z-index:1}
+@keyframes floatY{from{transform:translateY(-10px)}to{transform:translateY(12px)}}
+.auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;background:var(--bg)}
+.auth-card{width:100%;max-width:430px;background:var(--card);border-radius:22px;box-shadow:var(--sh2);padding:36px 34px}
+.auth-tabs{display:flex;background:#eef0f8;border-radius:12px;padding:4px;margin-bottom:24px}
+.auth-tabs button{flex:1;border:none;background:transparent;padding:10px;border-radius:9px;font-size:14.5px;font-weight:600;color:var(--sub);cursor:pointer;transition:.15s}
+.auth-tabs button.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(30,34,80,.1)}
+.ava-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.ava-pick{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--line);cursor:pointer;background:#fff;transition:.15s}
+.ava-pick.on{border-color:var(--p1);background:#eef0ff;transform:scale(1.1)}
+@media(max-width:920px){.auth-left{display:none}.auth-right{background:linear-gradient(135deg,#4f46e5,#7c3aed)}}
+
+/* ---------- 应用框架 ---------- */
+#app-view{display:flex;min-height:100vh}
+.sidebar{width:236px;background:linear-gradient(180deg,var(--side1),var(--side2));color:#c6c9e8;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;z-index:20}
+.s-logo{display:flex;align-items:center;gap:10px;padding:22px 20px 18px;color:#fff;font-size:19px;font-weight:800}
+.s-logo .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:20px}
+.s-nav{flex:1;padding:6px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.s-nav a{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:12px;color:#a9adcf;font-size:14.5px;font-weight:500;cursor:pointer;transition:.15s;user-select:none}
+.s-nav a:hover{background:rgba(255,255,255,.07);color:#fff}
+.s-nav a.on{background:rgba(255,255,255,.14);color:#fff;font-weight:700}
+.s-nav a .ic{font-size:17px;width:22px;text-align:center}
+.s-nav .nav-sec{font-size:11px;color:#6b6f9c;padding:14px 14px 4px;letter-spacing:1px}
+.s-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.09)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:64px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:15}
+.tb-title{font-size:17px;font-weight:700}
+.tb-right{display:flex;align-items:center;gap:12px}
+.pill{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13.5px;font-weight:700}
+.tb-ava{width:40px;height:40px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 8px rgba(30,34,80,.15);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#eef0ff,#fde7f3)}
+.view{padding:26px 30px 60px;max-width:1180px;width:100%;margin:0 auto}
+@media(max-width:900px){.sidebar{width:66px}.s-logo span,.s-nav a .txt,.nav-sec,.s-foot .s-user-info{display:none}.s-logo{justify-content:center;padding:18px 0}.s-nav a{justify-content:center}.s-foot{display:flex;justify-content:center}.view{padding:18px 14px 80px}}
+
+/* ---------- 通用卡片/网格 ---------- */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:22px}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-h .t{font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:1000px){.grid3,.grid4{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+@media(max-width:560px){.grid3,.grid4{grid-template-columns:1fr}}
+.stat-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:18px 20px;display:flex;gap:14px;align-items:center}
+.sc-ic{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0}
+.sc-num{font-size:23px;font-weight:800;line-height:1.15}
+.sc-label{font-size:12.5px;color:var(--sub)}
+.bar{height:8px;background:#edeff8;border-radius:99px;overflow:hidden}
+.bar-i{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--p1),var(--p2));transition:width .5s}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.hero-banner{background:linear-gradient(120deg,#5b5ef4 0%,#8b5cf6 55%,#c026d3 120%);border-radius:20px;color:#fff;padding:28px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;overflow:hidden;box-shadow:0 14px 34px rgba(99,102,241,.35)}
+.hero-banner::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.12);right:-60px;top:-110px}
+.hero-banner h2{font-size:23px;font-weight:800;margin-bottom:8px}
+.hero-banner p{opacity:.92;font-size:14px;line-height:1.7}
+.ring-wrap{position:relative;width:92px;height:92px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.25);stroke-width:9}
+.ring-bg2{fill:none;stroke:#edeff8;stroke-width:9}
+.ring-i{fill:none;stroke:#fff;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .6s}
+.ring-i.dark{stroke:var(--p1)}
+.ring-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:16px}
+
+/* ---------- 课程库 ---------- */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab{padding:9px 20px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-size:14px;font-weight:600;cursor:pointer;transition:.15s;color:var(--sub)}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.level-block{margin-bottom:18px}
+.level-head{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:18px 22px;background:var(--card);border-radius:var(--r);box-shadow:var(--sh)}
+.level-head .lv-badge{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff}
+.lesson-row{display:flex;align-items:center;gap:16px;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:18px 22px;margin-top:12px;transition:.16s}
+.lesson-row:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.lr-icon{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:25px;background:#f0f2ff;flex-shrink:0}
+.lr-main{flex:1;min-width:0}
+.lr-title{font-weight:700;font-size:15.5px;margin-bottom:4px}
+.module-dots{display:flex;gap:5px;margin-top:7px}
+.md{width:26px;height:6px;border-radius:99px;background:#e5e8f5}
+.md.done{background:var(--ok)}
+
+/* ---------- 课程学习（闪卡/测验/口语/听力） ---------- */
+.stage-wrap{max-width:640px;margin:0 auto}
+.stage-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.stage-top .back{cursor:pointer;color:var(--sub);font-size:14px;font-weight:600;background:none;border:none}
+.step-dots{display:flex;gap:6px}
+.sd{width:34px;height:7px;border-radius:99px;background:#e2e5f4;font-size:0}
+.sd.done{background:var(--p1)}
+.sd.cur{background:linear-gradient(90deg,var(--p1),var(--p2))}
+.fc-stage{perspective:1200px}
+.fc{position:relative;height:320px;cursor:pointer;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.fc.flip{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;box-shadow:var(--sh2)}
+.fc-face.front{background:linear-gradient(150deg,#ffffff,#f4f2ff);border:1px solid var(--line)}
+.fc-face.back{background:linear-gradient(150deg,#5b5ef4,#8b5cf6 60%,#a855f7);color:#fff;transform:rotateY(180deg)}
+.fc-lang{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--p2);text-transform:uppercase;margin-bottom:16px}
+.fc-word{font-size:40px;font-weight:800;line-height:1.25;word-break:break-word}
+.fc-word.ja,.fc-word.ko{font-size:34px}
+.fc-hint{margin-top:18px;font-size:13px;color:#a0a4c8}
+.fc-reading{font-size:19px;opacity:.9;margin:8px 0 18px;font-weight:600}
+.fc-zh{font-size:26px;font-weight:800;margin-bottom:18px}
+.fc-ex{background:rgba(255,255,255,.16);border-radius:12px;padding:12px 18px;font-size:14.5px;line-height:1.7}
+.fc-actions{display:flex;gap:12px;margin-top:22px}
+.fc-btn{flex:1;border:none;border-radius:14px;padding:15px 10px;font-size:15px;font-weight:700;cursor:pointer;color:#fff;transition:.15s}
+.fc-btn:hover{transform:translateY(-2px)}
+.fc-btn.red{background:linear-gradient(135deg,#f87171,#ef4444)}
+.fc-btn.amber{background:linear-gradient(135deg,#fbbf24,#f59e0b)}
+.fc-btn.green{background:linear-gradient(135deg,#34d399,#10b981)}
+.snd-btn{width:46px;height:46px;border-radius:50%;border:none;background:#eef0ff;color:var(--p1);font-size:19px;cursor:pointer;transition:.15s;flex-shrink:0}
+.snd-btn:hover{background:#e0e3ff;transform:scale(1.06)}
+.q-card{background:var(--card);border-radius:20px;box-shadow:var(--sh);padding:26px}
+.q-title{font-size:18px;font-weight:700;margin-bottom:18px;line-height:1.55}
+.q-opt{border:2px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:10px;cursor:pointer;font-size:15px;transition:.15s;background:#fff;display:flex;align-items:center;gap:10px}
+.q-opt:hover{border-color:#c9cdf0}
+.q-opt .ol{width:26px;height:26px;border-radius:8px;background:#f0f2fa;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:var(--sub);flex-shrink:0}
+.q-opt.ok{border-color:var(--ok);background:var(--okbg)}
+.q-opt.bad{border-color:var(--bad);background:var(--badbg)}
+.q-opt.dim{opacity:.55}
+.q-opt.ok .ol,.q-opt.bad .ol{background:transparent}
+.q-why{background:#f6f7fd;border-left:4px solid var(--p1);border-radius:10px;padding:11px 14px;font-size:13.5px;color:var(--sub);margin:12px 0;line-height:1.7}
+.gram-card{background:linear-gradient(150deg,#fff,#f2f0ff);border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:var(--sh)}
+.gram-card h3{font-size:19px;margin-bottom:12px;display:flex;gap:9px;align-items:center}
+.gram-card .exp{font-size:15px;line-height:2;color:#3c4166;white-space:pre-line}
+.speak-card{background:var(--card);border-radius:20px;box-shadow:var(--sh);padding:30px;text-align:center}
+.sp-text{font-size:27px;font-weight:800;line-height:1.5;margin:18px 0 6px}
+.sp-zh{color:var(--sub);font-size:14.5px;margin-bottom:22px}
+.mic-btn{width:76px;height:76px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--p1),var(--p3));color:#fff;font-size:30px;cursor:pointer;box-shadow:0 10px 24px rgba(139,92,246,.4);transition:.2s;margin:0 auto}
+.mic-btn:hover{transform:scale(1.07)}
+.mic-btn.rec{animation:pulse 1.1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(236,72,153,.5)}70%{box-shadow:0 0 0 18px rgba(236,72,153,0)}100%{box-shadow:0 0 0 0 rgba(236,72,153,0)}}
+.sp-score{font-size:38px;font-weight:800;margin:10px 0}
+.score-hip{font-size:14px;color:var(--sub)}
+
+/* ---------- 进度页 ---------- */
+.hm{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;max-width:290px}
+.hm-cell{width:100%;aspect-ratio:1;border-radius:5px;background:#edeff8}
+.hm-cell.l1{background:#dcd7fb}.hm-cell.l2{background:#b1a7f5}.hm-cell.l3{background:#8b78ee}.hm-cell.l4{background:#5b5ef4}
+.legend{display:flex;gap:5px;align-items:center;font-size:12px;color:var(--sub);margin-top:10px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.chart-svg{width:100%;height:auto;display:block}
+
+/* ---------- 学习路径 ---------- */
+.road{position:relative;padding-left:34px}
+.road::before{content:"";position:absolute;left:12px;top:8px;bottom:8px;width:3px;border-radius:3px;background:#e2e5f4}
+.road-node{position:relative;margin-bottom:16px}
+.rn-dot{position:absolute;left:-34px;top:16px;width:27px;height:27px;border-radius:50%;background:#d7dbef;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;z-index:2}
+.road-node.done .rn-dot{background:var(--ok)}
+.road-node.cur .rn-dot{background:linear-gradient(135deg,var(--p1),var(--p3));box-shadow:0 0 0 5px rgba(99,102,241,.18)}
+.rn-card{background:var(--card);border-radius:14px;box-shadow:var(--sh);padding:15px 18px;display:flex;align-items:center;gap:14px}
+.road-node.cur .rn-card{border:2px solid var(--p1)}
+.rec-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:18px;display:flex;gap:14px;align-items:flex-start}
+.rec-ic{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+
+/* ---------- 社区 ---------- */
+.post{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:18px 20px;margin-bottom:14px}
+.p-head{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.p-ava{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#eef0ff,#fde7f3);display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.p-name{font-weight:700;font-size:14.5px}
+.p-time{font-size:12px;color:var(--sub)}
+.p-body{font-size:14.5px;line-height:1.85;white-space:pre-wrap}
+.p-actions{display:flex;gap:18px;margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}
+.p-act{background:none;border:none;cursor:pointer;font-size:13.5px;color:var(--sub);font-weight:600;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;transition:.15s}
+.p-act:hover{background:#f2f4fc}
+.p-act.on{color:var(--p3)}
+.c-item{display:flex;gap:10px;margin-top:12px;font-size:13.5px}
+.c-item .p-ava{width:32px;height:32px;font-size:16px}
+.c-bubble{background:#f4f5fb;border-radius:4px 14px 14px 14px;padding:9px 13px;line-height:1.6}
+.c-input{display:flex;gap:10px;margin-top:14px}
+.c-input input{flex:1;border:1.5px solid var(--line);border-radius:999px;padding:9px 16px;font-size:13.5px;outline:none}
+.c-input input:focus{border-color:var(--p1)}
+
+/* ---------- 成就 ---------- */
+.bd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:14px}
+.bd{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px 14px;text-align:center;transition:.16s}
+.bd .bd-icon{font-size:38px;filter:grayscale(1);opacity:.35;margin-bottom:10px}
+.bd.on{border:2px solid #ffd66b}
+.bd.on .bd-icon{filter:none;opacity:1;animation:pop .45s}
+@keyframes pop{0%{transform:scale(.5)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.bd .bd-name{font-weight:700;font-size:14px;margin-bottom:5px}
+.bd .bd-desc{font-size:12px;color:var(--sub);line-height:1.5}
+.lb-row{display:flex;align-items:center;gap:12px;padding:11px 8px;border-bottom:1px solid var(--line)}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{width:26px;font-weight:800;font-size:15px;color:var(--sub);text-align:center}
+.lb-rank.r1{color:#f59e0b}.lb-rank.r2{color:#8a93b2}.lb-rank.r3{color:#c47f3e}
+
+/* ---------- 模态框/提示 ---------- */
+.overlay{position:fixed;inset:0;background:rgba(24,27,58,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal{background:#fff;border-radius:22px;box-shadow:0 24px 64px rgba(20,22,60,.35);padding:30px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;animation:mup .25s}
+.modal-lg{max-width:640px}
+@keyframes mup{from{transform:translateY(22px);opacity:0}to{transform:none;opacity:1}}
+.toast-root{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:none}
+.toast{background:#262a4f;color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 10px 30px rgba(20,22,60,.35);animation:tin .3s;display:flex;gap:8px;align-items:center;max-width:86vw}
+.toast.ok{background:linear-gradient(135deg,#0ea36f,#10b981)}
+.toast.bad{background:linear-gradient(135deg,#ef4444,#f97316)}
+.toast.gold{background:linear-gradient(135deg,#f59e0b,#f97316);box-shadow:0 10px 30px rgba(245,158,11,.5)}
+@keyframes tin{from{transform:translateY(-16px);opacity:0}to{transform:none;opacity:1}}
+.cf{position:fixed;top:-16px;z-index:300;border-radius:3px;pointer-events:none;animation:cfall linear forwards}
+@keyframes cfall{to{transform:translateY(105vh) rotate(720deg);opacity:.6}}
+.empty{text-align:center;padding:46px 20px;color:var(--sub)}
+.empty .e-ic{font-size:44px;margin-bottom:12px}
+.fade-in{animation:fin .3s}
+@keyframes fin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="auth-view" class="hidden"></div>
+<div id="app-view" class="hidden">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main class="view" id="view"></main>
+  </div>
+</div>
+<div id="modal-root"></div>
+<div id="toast-root" class="toast-root"></div>
+<script>
+/* ================= 数据层：语言 / 课程 / 题库 / 徽章 ================= */
+const LANGS = {
+  en:{name:'英语',flag:'🇬🇧',tts:'en-US',levels:[
+    {label:'A1 入门',cls:'入门',color:'#10b981'},{label:'A2 基础',cls:'基础',color:'#6366f1'},{label:'B1 进阶',cls:'进阶',color:'#f59e0b'}]},
+  ja:{name:'日语',flag:'🇯🇵',tts:'ja-JP',levels:[
+    {label:'N5 五级',cls:'入门',color:'#10b981'},{label:'N4 四级',cls:'基础',color:'#6366f1'},{label:'N3 三级',cls:'进阶',color:'#f59e0b'}]},
+  ko:{name:'韩语',flag:'🇰🇷',tts:'ko-KR',levels:[
+    {label:'TOPIK Ⅰ',cls:'入门',color:'#10b981'},{label:'TOPIK Ⅱ',cls:'基础',color:'#6366f1'},{label:'TOPIK Ⅲ',cls:'进阶',color:'#f59e0b'}]}
+};
+const G={q:'',o:[],a:0,w:''};
+function V(w,r,zh,ex,exZh){return {w,r,zh,ex,exZh}}
+function Q(q,opts,a,why){return {q,opts,a,why}}
+function L(t,zh){return {t,zh}}
+function LI(q,opts,a){return {q,opts,a}}
+
+const COURSES = {
+/* ================= 英语 ================= */
+en:[
+[ // A1
+ {id:'en-a1-1',icon:'👋',title:'你好，世界 · 问候与自我介绍',desc:'学会最基本的问候语，用英语介绍自己',
+  vocab:[V('hello','/həˈloʊ/','你好（通用问候）','Hello! How are you today?','你好！你今天怎么样？'),
+   V('good morning','/ɡʊd ˈmɔːrnɪŋ/','早上好','Good morning, everyone!','大家早上好！'),
+   V('nice to meet you','/naɪs tə miːt juː/','很高兴认识你','Hi, I am Anna. Nice to meet you!','嗨，我是安娜。很高兴认识你！'),
+   V('my name is...','/maɪ neɪm ɪz/','我的名字叫……','My name is Li Lei.','我的名字叫李雷。'),
+   V('thank you','/θæŋk juː/','谢谢你','Thank you very much!','非常感谢！'),
+   V('goodbye','/ˌɡʊdˈbaɪ/','再见','Goodbye! See you tomorrow.','再见！明天见。'),
+   V('please','/pliːz/','请','Sit down, please.','请坐。'),
+   V('sorry','/ˈsɑːri/','对不起；抱歉','Sorry, I am late.','对不起，我迟到了。')],
+  grammar:[{t:'be 动词：am / is / are',e:'我用 am，你用 are，is 跟着他她它。\n主语是 I → am；主语是 he / she / it / 单个人名 → is；主语是 you / we / they → are。\n例：I am a student.  She is my teacher.  They are friends.'}],
+  quiz:[Q('I ___ a student.',["am","is","are"],0,'主语是 I 时 be 动词用 am。'),
+   Q('She ___ my English teacher.',["am","is","are"],1,'主语 She 是第三人称单数，用 is。'),
+   Q('___ you from Beijing?',["Am","Is","Are"],2,'主语 you 搭配 are，且句首大写。')],
+  speak:[L('Hello! My name is Li Lei. Nice to meet you.','你好！我叫李雷，很高兴认识你。'),
+   L('Good morning! How are you today?','早上好！你今天怎么样？')],
+  listen:[{t:'Good morning! Nice to meet you.',zh:'早上好！很高兴认识你。',q:'说话人在做什么？',opts:['打招呼问候','告别','道歉'],a:0},
+   {t:'My name is Anna. I am from London.',zh:'我叫安娜，我来自伦敦。',q:'Anna 来自哪里？',opts:['伦敦','纽约','巴黎']['伦敦','纽约','巴黎'],a:0},
+   {t:'Thank you very much!',zh:'非常感谢！',q:'这句话表达的是？',opts:['感谢','道歉','问候']['感谢','道歉','问候'],a:0}]
+},
+ {id:'en-a1-2',icon:'🔢',title:'数字与时间 Numbers & Time',desc:'掌握基础数字表达，学会询问时间',
+  vocab:[V('one','/wʌn/','一','I have one brother.','我有一个哥哥。'),
+   V('three','/θriː/','三','The class starts at three.','课程三点开始。'),
+   V('five','/faɪv/','五','Give me five!','击个掌！'),
+   V('seven','/ˈsevn/','七','A week has seven days.','一周有七天。'),
+   V('ten','/ten/','十','Ten students are here.','十个学生在这里。'),
+   V('today','/təˈdeɪ/','今天','Today is Monday.','今天是星期一。'),
+   V('tomorrow','/təˈmɒrəʊ/','明天','See you tomorrow!','明天见！'),
+   V('o\'clock','/əˈklɒk/','……点钟','It is nine o\'clock.','现在九点钟。')],
+  grammar:[{t:'询问与表达时间',e:'问时间：What time is it?\n答时间：It is + 数字 + o\'clock.\n例：What time is it? — It is seven o\'clock.\n整点用 o\'clock，几点半用 half past + 数字。'}],
+  quiz:[Q('What time is it? — It is ___ o\'clock.',["six","sixs","a six"],0,'表达整点：数字 + o\'clock。'),
+   Q('___ time is it now?',["What","Who","Where"],0,'询问时间用 What time is it?'),
+   Q('We go to school ___ seven o\'clock.',["at","on","in"],0,'具体钟点前用介词 at。')],
+  speak:[L('What time is it now? — It is nine o\'clock.','现在几点了？——现在九点。'),
+   L('See you tomorrow at three!','明天三点见！')],
+  listen:[{t:'It is seven o\'clock in the morning.',zh:'现在是早上七点。',q:'现在是几点？',opts:['早上七点','晚上七点','早上十点'],a:0},
+   {t:'The meeting is at ten thirty.',zh:'会议在十点半。',q:'会议几点开始？',opts:['十点半','十点','三点半'],a:0},
+   {t:'I get up at six every day.',zh:'我每天六点起床。',q:'说话人几点起床？',opts:['六点','五点','七点'],a:0}]
+},
+ {id:'en-a1-3',icon:'👨‍👩‍👧',title:'家庭与职业 Family & Jobs',desc:'介绍你的家庭成员和他们的职业',
+  vocab:[V('father','/ˈfɑːðər/','爸爸；父亲','My father is a driver.','我爸爸是一名司机。'),
+   V('mother','/ˈmʌðər/','妈妈；母亲','Her mother cooks well.','她妈妈做饭很好吃。'),
+   V('brother','/ˈbrʌðər/','哥哥；弟弟','My brother likes football.','我哥哥喜欢足球。'),
+   V('sister','/ˈsɪstər/','姐姐；妹妹','My sister is six years old.','我妹妹六岁了。'),
+   V('teacher','/ˈtiːtʃər/','教师','She is an English teacher.','她是一名英语老师。'),
+   V('doctor','/ˈdɑːktər/','医生','The doctor helps people.','医生帮助人们。'),
+   V('student','/ˈstuːdnt/','学生','I am a middle school student.','我是一名中学生。'),
+   V('friend','/frend/','朋友','Tom is my best friend.','汤姆是我最好的朋友。')],
+  grammar:[{t:'介绍句型 This is... / He is a... ',e:'介绍他人：This is my + 家人.\n说明职业：He / She is a / an + 职业.\n元音开头的职业用 an：an English teacher；辅音开头用 a：a doctor。'}],
+  quiz:[Q('This is my mother. ___ is a nurse.',["He","She","It"],1,'mother 用 She 指代。'),
+   Q('My uncle is ___ English teacher.',["a","an","the"],1,'English 元音开头，用 an。'),
+   Q('___ is my best friend.',["These","Tom","They is"],1,'主语单数 Tom，谓语搭配一致。')],
+  speak:[L('This is my mother. She is a doctor.','这是我的妈妈，她是一名医生。'),
+   L('My father is a teacher. He teaches math.','我爸爸是老师，他教数学。')],
+  listen:[{t:'My sister is a nurse.',zh:'我的姐姐是一名护士。',q:'姐姐的职业是？',opts:['护士','医生','教师'],a:0},
+   {t:'There are five people in my family.',zh:'我家有五口人。',q:'他家有几口人？',opts:['五口','四口','六口'],a:0},
+   {t:'My brother studies at university.',zh:'我哥哥在大学读书。',q:'哥哥在做什么？',opts:['读大学','教大学','工作'],a:0}]
+}],
+[ // A2
+ {id:'en-a2-1',icon:'🛍️',title:'城市购物 Shopping',desc:'学会询价、砍价与付款的常用表达',
+  vocab:[V('price','/praɪs/','价格','What is the price of this bag?','这个包多少钱？'),
+   V('cheap','/tʃiːp/','便宜的','This shirt is very cheap.','这件衬衫很便宜。'),
+   V('expensive','/ɪkˈspensɪv/','昂贵的','The watch is too expensive.','这块表太贵了。'),
+   V('buy','/baɪ/','买','I want to buy some fruit.','我想买点水果。'),
+   V('pay','/peɪ/','付款','Can I pay by card?','我可以刷卡吗？'),
+   V('discount','/ˈdɪskaʊnt/','折扣','There is a 20% discount today.','今天打八折。'),
+   V('size','/saɪz/','尺码','Do you have a bigger size?','有大一号的吗？'),
+   V('shop','/ʃɒp/','商店；购物','The shop closes at nine.','商店九点关门。')],
+  grammar:[{t:'How much...? 与 Can I...?',e:'问价格：How much is / are + 商品?\n单数用 is，复数用 are。\n提出请求：Can I + 动词原形...?\n例：Can I try it on? 我能试试吗？'}],
+  quiz:[Q('How much ___ these shoes?',["is","are","be"],1,'shoes 为复数，用 are。'),
+   Q('Can I ___ by card?',["pays","pay","paying"],1,'情态动词 Can 后接动词原形。'),
+   Q('The coat is 200 yuan. That is a good ___.',["price","size","shop"],0,'表示"价格不错"用 price。')],
+  speak:[L('How much is this T-shirt? — It is ninety-nine yuan.','这件T恤多少钱？——九十九元。'),
+   L('Can I pay by card? Sure, here you are.','我能刷卡吗？当然，给您。')],
+  listen:[{t:'This jacket is on sale, thirty percent off.',zh:'这件夹克在打折，打七折。',q:'折扣是多少？',opts:['七折','五折','八折'],a:0},
+   {t:'Do you have this in a larger size?',zh:'这个有大一号的吗？',q:'顾客想要什么？',opts:['更大的尺码','更小的尺码','换颜色'],a:0},
+   {t:'I will take it. Here is the money.',zh:'我买了，给你钱。',q:'顾客接下来做什么？',opts:['付款','退货','试穿'],a:0}]
+},
+ {id:'en-a2-2',icon:'✈️',title:'旅行出行 Travel',desc:'订票、问路、入住，走遍世界不慌张',
+  vocab:[V('airport','/ˈerpɔːrt/','机场','We take a taxi to the airport.','我们打车去机场。'),
+   V('ticket','/ˈtɪkɪt/','票','I booked a ticket online.','我在网上订了张票。'),
+   V('flight','/flaɪt/','航班','The flight is on time.','航班准点。'),
+   V('hotel','/hoʊˈtel/','酒店','The hotel is near the beach.','酒店在海边。'),
+   V('map','/mæp/','地图','Can I have a city map?','能给我一张城市地图吗？'),
+   V('luggage','/ˈlʌɡɪdʒ/','行李','My luggage is heavy.','我的行李很重。'),
+   V('leave','/liːv/','离开；出发','The train leaves at eight.','火车八点出发。'),
+   V('arrive','/əˈraɪv/','到达','We arrive in Tokyo at noon.','我们中午抵达东京。')],
+  grammar:[{t:'现在进行时与 will 将来时',e:'现在进行时：be + 动词ing，表示正在发生。\n例：The plane is taking off. 飞机正在起飞。\n一般将来：will + 动词原形，表示将要发生。\n例：I will call you tonight. 我今晚给你打电话。'}],
+  quiz:[Q('Listen! The plane ___ off.',["takes","is taking","took"],1,'Listen! 提示正在发生，用现在进行时。'),
+   Q('I ___ visit Paris next summer.',["will","am","was"],0,'next summer 表将来，用 will。'),
+   Q('They ___ the hotel at noon yesterday.',["arrived at","arrive at","will arrive"],0,'yesterday 表过去，用过去式 arrived at。')],
+  speak:[L('I would like to book a ticket to Tokyo.','我想订一张去东京的票。'),
+   L('Excuse me, where is Gate Five?','打扰一下，五号登机口在哪里？')],
+  listen:[{t:'Your train leaves from Platform 3.',zh:'你的火车从3号站台出发。',q:'火车从几号站台出发？',opts:['3号','5号','13号'],a:0},
+   {t:'We arrived at the hotel at noon.',zh:'我们中午到了酒店。',q:'什么时候到达的？',opts:['中午','早上','晚上'],a:0},
+   {t:'Do not forget your passport!',zh:'别忘了你的护照！',q:'对方提醒带什么？',opts:['护照','行李','地图'],a:0}]
+}],
+[ // B1
+ {id:'en-b1-1',icon:'💬',title:'观点与讨论 Opinions & Discussion',desc:'流畅表达观点，学会赞同与委婉反驳',
+  vocab:[V('opinion','/əˈpɪnjən/','观点；看法','In my opinion, it is worth trying.','在我看来值得一试。'),
+   V('agree','/əˈɡriː/','同意','I agree with you completely.','我完全同意你。'),
+   V('disagree','/ˌdɪsəˈɡriː/','不同意','I disagree about the cost.','在费用这点上我不同意。'),
+   V('prefer','/prɪˈfɜːr/','更喜欢；宁愿','I prefer face-to-face talks.','我更喜欢面对面交流。'),
+   V('advantage','/ədˈvæntɪdʒ/','优势；好处','The main advantage is flexibility.','主要优势是灵活性。'),
+   V('disadvantage','/ˌdɪsədˈvæntɪdʒ/','劣势；坏处','The disadvantage is the cost.','劣势在于成本。'),
+   V('suggest','/səˈdʒest/','建议','I would suggest watching films.','我建议看电影。'),
+   V('consider','/kənˈsɪdər/','考虑','We should consider all options.','我们应该考虑所有选项。')],
+  grammar:[{t:'观点表达与比较结构',e:'表达观点：I think / believe / in my opinion + 从句。\n委婉反对：I see your point, but...\n比较结构：more + 形容词 + than。\n例：Online learning is more flexible than classroom learning.'}],
+  quiz:[Q('In my ___, learning online is more flexible.',["opinion","opinions","opinionate"],0,'固定搭配 in my opinion。'),
+   Q('I see your point, ___ I disagree about the price.',["so","but","or"],1,'委婉转折用 but。'),
+   Q('Studying abroad is ___ expensive than studying here.',["much","more","most"],1,'比较级结构 more...than。')],
+  speak:[L('In my opinion, learning languages online is more flexible.','在我看来，线上学语言更灵活。'),
+   L('I agree with you, but I prefer face-to-face communication.','我同意你，但我更喜欢面对面交流。')],
+  listen:[{t:'I would suggest watching movies without subtitles to improve listening.',zh:'我建议看无字幕电影来提高听力。',q:'对方建议做什么？',opts:['看无字幕电影','多背单词','请家教'],a:0},
+   {t:'One advantage is that you can study anytime, anywhere.',zh:'一个好处是你可以随时随地学习。',q:'说的是什么好处？',opts:['随时学习','价格便宜','老师更好'],a:0},
+   {t:'I see your point, but I disagree about the cost.',zh:'我明白你的意思，但在费用上我不同意。',q:'说话人在哪方面不同意？',opts:['费用','时间','地点'],a:0}]
+}]
+],
+/* ================= 日语 ================= */
+ja:[
+[ // N5
+ {id:'ja-n5-1',icon:'🌸',title:'五十音起步 · 基础问候',desc:'从零开始，掌握日语最基本的问候语',
+  vocab:[V('おはよう','ohayou','早上好','おはようございます。','早上好。（礼貌形）'),
+   V('こんにちは','konnichiwa','你好（白天）','こんにちは、元気ですか。','你好，你好吗？'),
+   V('こんばんは','konbanwa','晚上好','こんばんは、お元気ですか。','晚上好，您还好吗？'),
+   V('ありがとう','arigatou','谢谢','ありがとうございました。','谢谢您（过去）。'),
+   V('すみません','sumimasen','不好意思；劳驾','すみません、駅はどこですか。','请问，车站在哪里？'),
+   V('さようなら','sayounara','再见','先生、さようなら。','老师，再见。'),
+   V('はい','hai','是；好的','はい、そうです。','是的，是这样的。'),
+   V('いいえ','iie','不；不是','いいえ、違います。','不，不是的。')],
+  grammar:[{t:'判断句「〜は〜です」',e:'「は」是主题助词，读作 wa；「です」是礼貌断定，相当于"是"。\n句型：A は B です。→ A 是 B。\n例：私は学生です。（我是学生。）\n疑问：A は B ですか。'}],
+  quiz:[Q('「私は学生です」的意思是？',["我是学生","他是老师","你是学生"],0,'〜は〜です = 「是」句型。'),
+   Q('「李さん」中的「は」读作？',["ha","wa","ba"],1,'助词 は 作助词时读 wa。'),
+   Q('「田中さんですか」是什么句？',["疑问句","否定句","感叹句"],0,'句尾か表示疑问。')],
+  speak:[L('初めまして、李です。よろしくお願いします。','初次见面，我姓李，请多关照。'),
+   L('おはようございます。元気ですか。','早上好。你好吗？')],
+  listen:[{t:'すみません、駅はどこですか。',zh:'请问，车站在哪里？',q:'说话人想做什么？',opts:['问路','道谢','告别'],a:0},
+   {t:'ありがとうございました。',zh:'谢谢您了。',q:'这句话表达的是？',opts:['感谢','道歉','问候'],a:0},
+   {t:'はい、そうです。',zh:'是的，是这样的。',q:'回答内容是？',opts:['肯定','否定','疑问'],a:0}]
+},
+ {id:'ja-n5-2',icon:'🙇',title:'自我介绍 Self-Introduction',desc:'用日语介绍自己的名字、国籍和职业',
+  vocab:[V('私','watashi','我','私は王です。','我姓王。'),
+   V('名前','namae','名字','お名前は何ですか。','您叫什么名字？'),
+   V('学生','gakusei','学生','弟も学生です。','弟弟也是学生。'),
+   V('先生','sensei','老师','山田さんは先生です。','山田先生是老师。'),
+   V('会社員','kaishain','公司职员','父は会社員です。','我爸爸是公司职员。'),
+   V('中国人','chuugokujin','中国人','私は中国人です。','我是中国人。'),
+   V('友達','tomodachi','朋友','太郎は私の友達です。','太郎是我的朋友。'),
+   V('現在','genzai','现在','現在、東京にいます。','我现在在东京。')],
+  grammar:[{t:'「も」表也 / 「じゃありません」否定',e:'「も」相当于"也"：田中さんも学生です。（田中也是学生。）\n否定：〜は〜じゃありません / ではありません。\n例：私は先生じゃありません。（我不是老师。）'}],
+  quiz:[Q('「田中さんも学生です」中「も」表示？',["也","的","在"],0,'も=也，替代は表主题并列。'),
+   Q('「私は先生____」填否定',["です","じゃありません","ました"],1,'否定判断用じゃありません。'),
+   Q('「初めまして」用在什么场合？',["初次见面","道别","道谢"],0,'初めまして=初次见面用语。')],
+  speak:[L('私は王です。中国人です。','我姓王，是中国人。'),
+   L('田中さんは先生です。','田中先生是老师。')],
+  listen:[{t:'私は学生ではありません。',zh:'我不是学生。',q:'说话人的身份？',opts:['不是学生','是学生','是老师'],a:0},
+   {t:'田中さんも学生です。',zh:'田中也是学生。',q:'「も」的含义？',opts:['也','的','和'],a:0},
+   {t:'初めまして、山田と申します。',zh:'初次见面，我叫山田。',q:'这是什么场合？',opts:['初次见面','告别','购物'],a:0}]
+},
+ {id:'ja-n5-3',icon:'💴',title:'数字与购物 Numbers & Shopping',desc:'学会说价格，在店里轻松买东西',
+  vocab:[V('円','en','日元','これは五百円です。','这个是500日元。'),
+   V('いくら','ikura','多少钱','これ、いくらですか。','这个多少钱？'),
+   V('これ','kore','这个（近处）','これをください。','请给我这个。'),
+   V('それ','sore','那个（中距离）','それはいくらですか。','那个多少钱？'),
+   V('高い','takai','贵的','少し高いですね。','有点贵呢。'),
+   V('安い','yasui','便宜的','この店は安いです。','这家店很便宜。'),
+   V('買う','kau','买','本を買いました。','买了书。'),
+   V('百','hyaku','百','二百円です。','是200日元。')],
+  grammar:[{t:'「〜はいくらですか」与指示词',e:'问价：これ / それ / あれ は いくらですか。\n指示词：これ(近我)・それ(近你)・あれ(远处)。\n想要某物：〜をください。（请给我～）'}],
+  quiz:[Q('「これはいくらですか」在问？',["价格","地点","时间"],0,'いくら=多少钱。'),
+   Q('近处的东西用哪个指示词？',["これ","それ","あれ"],0,'これ指离说话人近的事物。'),
+   Q('「本をください」的意思？',["请给我书","我买书了","书很贵"],0,'〜をください=请给我～。')],
+  speak:[L('すみません、これはいくらですか。','请问，这个多少钱？'),
+   L('この本をください。','请给我这本书。')],
+  listen:[{t:'それは三千円です。',zh:'那个是3000日元。',q:'价格是多少？',opts:['3000日元','300日元','三万日元'],a:0},
+   {t:'これは少し高いですね。',zh:'这个有点贵呢。',q:'说话人的感受？',opts:['有点贵','很便宜','刚刚好'],a:0},
+   {t:'iPhone を買いました。',zh:'买了iPhone。',q:'做了什么？',opts:['买了iPhone','卖了iPhone','想买iPhone'],a:0}]
+}],
+[ // N4
+ {id:'ja-n4-1',icon:'🍜',title:'日常动词与过去式 Daily Verbs',desc:'掌握ます形与过去式，描述昨天今天',
+  vocab:[V('食べる','taberu','吃','朝ごはんを食べます。','吃早饭。'),
+   V('飲む','nomu','喝','コーヒーを飲みました。','喝了咖啡。'),
+   V('行く','iku','去','昨日、東京へ行きました。','昨天去了东京。'),
+   V('見る','miru','看','映画を見ます。','看电影。'),
+   V('勉強する','benkyou suru','学习','図書館で勉強します。','在图书馆学习。'),
+   V('仕事','shigoto','工作','仕事は九時からです。','工作从9点开始。'),
+   V('友達','tomodachi','朋友','友達と話しました。','和朋友聊了天。'),
+   V('毎朝','maiasa','每天早上','毎朝、走ります。','每天早上跑步。')],
+  grammar:[{t:'ます形与过去式「ました」',e:'现在/习惯：〜ます。过去：〜ました。\n例：毎朝コーヒーを飲みます。／昨日コーヒーを飲みました。\n过去否定：〜ませんでした。'}],
+  quiz:[Q('「昨日、本を読み____」填空',["ます","ました","ません"],1,'昨日+过去式ました。'),
+   Q('「行きました」的原形是？',["行く","行きます","行って"],0,'ました对应原形行く。'),
+   Q('「食べませんでした」表示？',["没吃","吃了","想吃"],0,'ませんでした=过去否定。')],
+  speak:[L('昨日、友達と映画を見ました。','昨天和朋友看了电影。'),
+   L('毎朝、コーヒーを飲みます。','每天早上喝咖啡。')],
+  listen:[{t:'昨日は東京へ行きました。',zh:'昨天去了东京。',q:'昨天去了哪里？',opts:['东京','大阪','京都'],a:0},
+   {t:'昼ごはんを食べましたか。',zh:'吃午饭了吗？',q:'这是什么句子？',opts:['疑问句','否定句','命令句'],a:0},
+   {t:'図書館で勉強します。',zh:'在图书馆学习。',q:'在哪里学习？',opts:['图书馆','教室','家'],a:0}]
+},
+ {id:'ja-n4-2',icon:'🙏',title:'能力表达与请求 Ability & Requests',desc:'会说我能做什么，礼貌提出请求',
+  vocab:[V('話す','hanasu','说；讲','日本語を話します。','说日语。'),
+   V('書く','kaku','写','漢字を書くことができます。','会写汉字。'),
+   V('待つ','matsu','等待','少々お待ちください。','请稍等。'),
+   V('手伝う','tetsudau','帮忙','手伝いましょうか。','要我帮忙吗？'),
+   V('予約','yoyaku','预约','レストランを予約しました。','订了餐厅。'),
+   V('漢字','kanji','汉字','漢字の読み方を覚えました。','记住了汉字读法。'),
+   V('写真','shashin','照片','写真を撮ってもいいですか。','可以拍照吗？'),
+   V('上手','jouzu','擅长；厉害','姉は料理が上手です。','姐姐很会做饭。')],
+  grammar:[{t:'可能形「〜ことができます」与许可「〜てもいいですか」',e:'能力：動詞辞書形 + ことができます。例：日本語を話すことができます。\n许可：動詞て形 + もいいですか。例：ここで写真を撮ってもいいですか？\n禁止：〜ないでください。'}],
+  quiz:[Q('「写真を撮ってもいいですか」在请求？',["许可","帮助","重复"],0,'〜てもいいですか=可以做…吗。'),
+   Q('「中国語が話せます」表示？',["会说中文","教中文","学中文"],0,'可能形表示能力。'),
+   Q('「撮らないでください」表示？',["禁止","允许","建议"],0,'ないでください=请不要。')],
+  speak:[L('ここで写真を撮ってもいいですか。','可以在这里拍照吗？'),
+   L('日本語を少し話すことができます。','我会说一点日语。')],
+  listen:[{t:'写真を撮らないでください。',zh:'请不要拍照。',q:'对方的要求？',opts:['禁止拍照','帮忙拍照','再看一次'],a:0},
+   {t:'中国語が話せますか。',zh:'你会说中文吗？',q:'在询问什么？',opts:['能力','计划','爱好'],a:0},
+   {t:'明日までに予約してください。',zh:'请在明天之前预约。',q:'截止时间？',opts:['明天之前','今天之内','下周'],a:0}]
+}],
+[ // N3
+ {id:'ja-n3-1',icon:'🎌',title:'敬语入门 Keigo Basics',desc:'尊敬语与谦让语，商务日语第一步',
+  vocab:[V('いらっしゃる','irassharu','「いる/行く」的尊敬语','社長はもういらっしゃいました。','总经理已经来了/走了。'),
+   V('なさる','nasaru','「する」的尊敬语','何をなさっていますか。','您在做什么呢？'),
+   V('召し上がる','meshiagaru','「食べる」的尊敬语','どうぞ召し上がってください。','请享用。'),
+   V('存じる','zonjiru','「知る」的谦让语','よく存じております。','我非常了解。'),
+   V('伺う','ukagau','「行く/聞く」的谦让语','お名前を伺ってもいいですか。','能请教您的名字吗？'),
+   V('恐れ入ります','osoreirimasu','不好意思；诚惶诚恐','恐れ入りますが、もう一度お願いします。','不好意思，请再说一遍。')],
+  grammar:[{t:'尊敬语「お/ご〜になる」与谦让语「お〜する」',e:'抬高对方：お + 动词ます形 + になる。例：社長が帰られました。\n压低自己：お + ます形 + する。例：お待たせしました。\n「お/ご〜ください」= 请对方做。'}],
+  quiz:[Q('「いらっしゃいました」的原形动词是？',["行く/いる","食べる","する"],0,'いらっしゃる是行く/いる的尊敬语。'),
+   Q('「お待たせしました」属于？',["谦让语","尊敬语","命令语"],0,'压低自己动作用谦让语。'),
+   Q('对上司的动作应该用？',["尊敬语","谦让语","普通形"],0,'抬高对方用尊敬语。')],
+  speak:[L('社長はもう帰られました。','总经理已经回去了。'),
+   L('お名前を伺ってもよろしいでしょうか。','能请教一下您的名字吗？')],
+  listen:[{t:'部長がいらっしゃいました。',zh:'部长来了。',q:'句子的意思？',opts:['部长来了','我去部长那','部长走了吗'],a:0},
+   {t:'お待たせしました。',zh:'让您久等了。',q:'什么场合使用？',opts:['让对方等待后','道谢时','告别时'],a:0},
+   {t:'ご利用ありがとうございます。',zh:'感谢您的使用。',q:'什么场合使用？',opts:['服务场景','自我介绍','购物砍价'],a:0}]
+}]
+],
+/* ================= 韩语 ================= */
+ko:[
+[ // TOPIK Ⅰ
+ {id:'ko-t1-1',icon:'🇰🇷',title:'한글 与基础问候 Hangul Basics',desc:'从韩文字母到日常问候，零基础入门',
+  vocab:[V('안녕하세요','annyeonghaseyo','你好','안녕하세요? 반갑습니다.','你好？很高兴见到你。'),
+   V('감사합니다','gamsahamnida','谢谢','도와주셔서 감사합니다.','谢谢您的帮助。'),
+   V('죄송합니다','joesonghamnida','对不起','늦어서 죄송합니다.','来晚了，对不起。'),
+   V('안녕히 가세요','annyeonghi gaseyo','再见（对走的人）','안녕히 가세요! 또 만나요!','再见！再见面！'),
+   V('네','ne','是；好的','네, 맞아요.','是的，没错。'),
+   V('아니요','aniyo','不是','아니요, 학생이 아니에요.','不，不是学生。'),
+   V('반갑습니다','bangapseumnida','很高兴见到你','만나서 반갑습니다.','见到你很高兴。'),
+   V('이것','igeot','这个','이것은 무엇입니까?','这是什么？')],
+  grammar:[{t:'判断句「-입니다 / -입니까?」与主题助词 은/는',e:'陈述：명사 + 입니다（是～）。\n疑问：명사 + 입니까?（是～吗？）\n主题助词：辅音结尾+은，元音结尾+는。\n例：저는 학생입니다.（我是学生。）'}],
+  quiz:[Q('「저는 학생입니다」的意思？',["我是学生","他是老师","这不是书"],0,'-입니다=是。'),
+   Q('「학생____」填主题助词',["은","는","이"],0,'학생辅音结尾用은。'),
+   Q('「감사합니다」的意思？',["谢谢","对不起","你好"],0,'감사합니다=谢谢。')],
+  speak:[L('안녕하세요? 저는 왕리입니다.','你好？我叫王丽。'),
+   L('만나서 반갑습니다.','很高兴见到你。')],
+  listen:[{t:'감사합니다.',zh:'谢谢。',q:'这句话表达的是？',opts:['感谢','道歉','问候'],a:0},
+   {t:'이것은 무엇입니까?',zh:'这是什么？',q:'在问什么？',opts:['这是什么','那个人是谁','多少钱'],a:0},
+   {t:'네, 그렇습니다.',zh:'是的，是这样的。',q:'回答内容是？',opts:['肯定','否定','反问'],a:0}]
+},
+ {id:'ko-t1-2',icon:'🙋',title:'自我介绍 Self-Introduction',desc:'介绍名字、国籍、职业，认识新朋友',
+  vocab:[V('저','jeo','我（谦称）','저는 리민입니다.','我叫李敏。'),
+   V('이름','ireum','名字','이름이 뭐예요?','你叫什么名字？'),
+   V('학생','haksaeng','学生','저는 대학생입니다.','我是大学生。'),
+   V('선생님','seonsaengnim','老师','김선생님은 한국인입니다.','金老师是韩国人。'),
+   V('회사원','hoesawon','公司职员','아버지는 회사원이에요.','爸爸是公司职员。'),
+   V('중국','jungguk','中国','저는 중국 사람입니다.','我是中国人。'),
+   V('한국어','hangugeo','韩语','한국어를 공부해요.','学韩语。'),
+   V('친구','chingu','朋友','동생은 제 친구입니다.','弟弟是我朋友。')],
+  grammar:[{t:'主格助词 이/가 与否定 -이 아니다',e:'主格：辅音结尾+이，元音结尾+가。例：이름이 뭐예요?\n否定：명사 + 이/가 아닙니다（不是～）。\n例：저는 학생이 아닙니다.（我不是学生。）'}],
+  quiz:[Q('「이름____ 뭐예요?」填空',["이","가","은"],1,'이름元音结尾用가。'),
+   Q('「학생이 아닙니다」表示？',["不是学生","是学生","想当学生"],0,'-이 아니다=不是。'),
+   Q('谦称"我"用哪个词？',["나","저","우리"],1,'저是谦称，나是一般称呼。')],
+  speak:[L('저는 학생입니다. 한국어를 공부합니다.','我是学生，正在学韩语。'),
+   L('제 이름은 리민입니다.','我的名字叫李敏。')],
+  listen:[{t:'저는 중국 사람입니다.',zh:'我是中国人。',q:'说话人的国籍？',opts:['中国','韩国','日本'],a:0},
+   {t:'동생은 대학생입니다.',zh:'弟弟是大学生。',q:'동생的身份？',opts:['大学生','老师','公司职员'],a:0},
+   {t:'한국어를 배웁니다.',zh:'学韩语。',q:'在做什么？',opts:['学韩语','教韩语','翻译韩语'],a:0}]
+},
+ {id:'ko-t1-3',icon:'🍲',title:'点餐美食 Food & Ordering',desc:'在韩国餐厅自信点餐，赞不绝口',
+  vocab:[V('김치','kimchi','泡菜','한국 음식에는 김치가 있어요.','韩国料理有泡菜。'),
+   V('비빔밥','bibimbap','拌饭','비빔밥 하나 주세요.','请给我一份拌饭。'),
+   V('불고기','bulgogi','烤肉','불고기가 맛있어요.','烤肉很好吃。'),
+   V('물','mul','水','물 좀 주세요.','请给我水。'),
+   V('주문하다','jumunhada','点餐','뭐 주문할까요?','我们点什么？'),
+   V('맛있다','masitda','好吃','정말 맛있어요!','真好吃！'),
+   V('계산하다','gyesanada','结账','이거 계산해 주세요.','请帮我结账。'),
+   V('맵다','maepda','辣','이 음식은 매워요.','这个菜很辣。')],
+  grammar:[{t:'「-주세요 请给我～」与「-고 싶다 想要」',e:'请求：명사 + 주세요. 例：비빔밥 하나 주세요.\n动词 + 고 싶어요 表示愿望。例：김치찌개를 먹고 싶어요.\n数字量词：하나(一)、둘(二)、세(三)。'}],
+  quiz:[Q('「불고기 하나 주세요」的意思？',["请给我一份烤肉","烤肉好吃","一起吃烤肉吗"],0,'-주세요=请给我。'),
+   Q('「먹고 싶어요」表示？',["想吃","吃了","别吃"],0,'-고 싶어요=想～。'),
+   Q('「맛있어요!」在夸什么？',["好吃","太辣了","结账"],0,'맛있다=好吃。')],
+  speak:[L('비빔밥 하나 주세요.','请给我一份拌饭。'),
+   L('이거 계산해 주세요.','请帮我结这个账。')],
+  listen:[{t:'불고기 2인분 주세요.',zh:'请给我两人份烤肉。',q:'点了几份？',opts:['2人份','1人份','3人份'],a:0},
+   {t:'물 좀 주세요.',zh:'请给我水。',q:'想要什么？',opts:['水','饭','菜'],a:0},
+   {t:'정말 맛있어요!',zh:'真好吃！',q:'评价如何？',opts:['好吃','难吃','太咸'],a:0}]
+}],
+[ // TOPIK Ⅱ
+ {id:'ko-t2-1',icon:'📅',title:'日常约会 Daily Appointments',desc:'约时间、约地点，安排你的日程',
+  vocab:[V('약속','yaksok','约定；约会','내일 약속이 있어요.','明天有约。'),
+   V('시간','sigan','时间','시간이 있어요?','有时间吗？'),
+   V('오늘','oneul','今天','오늘은 너무 바빠요.','今天太忙了。'),
+   V('내일','naeil','明天','내일 만날까요?','明天见怎么样？'),
+   V('지금','jigeum','现在','지금 어디에 있어요?','你现在在哪里？'),
+   V('늦다','neutta','迟到','조금 늦을 것 같아요.','可能要迟到一点。'),
+   V('바쁘다','bappeuda','忙','요즘 정말 바빠요.','最近真的很忙。'),
+   V('만나다','mannada','见面','몇 시에 만날까요?','几点见面呢？')],
+  grammar:[{t:'提议「-(으)ㄹ까요?」与推测「-것 같다」',e:'提议/商量：동사 + (으)ㄹ까요? 例：같이 갈까요?（一起去吗？）\n推测：동사/형용사 + (으)ㄴ/는 것 같아요. 例：늦을 것 같아요.（好像要迟到。）'}],
+  quiz:[Q('「내일 만날까요?」表示？',["提议见面","已经见了","不想见"],0,'-(으)ㄹ까요=提议。'),
+   Q('「늦을 것 같아요」表示？',["推测要迟到","已经迟到","不迟到"],0,'-것 같아요=好像、推测。'),
+   Q('「바빠요」的意思？',["忙","累","饿"],0,'바쁘다=忙。')],
+  speak:[L('내일 시간이 있으면 같이 영화를 봅시다.','明天有时间的话一起看电影吧。'),
+   L('지금 어디에 있어요?','你现在在哪里？')],
+  listen:[{t:'내일 오후에 만날까요?',zh:'明天下午见面怎么样？',q:'提议什么时候见面？',opts:['明天下午','今天下午','明天上午'],a:0},
+   {t:'조금 늦을 것 같아요.',zh:'可能要迟到一点。',q:'说话人的情况？',opts:['可能迟到','已经到了','不来了'],a:0},
+   {t:'오늘은 너무 바빠요.',zh:'今天太忙了。',q:'今天的状况？',opts:['很忙','有空','生病'],a:0}]
+},
+ {id:'ko-t2-2',icon:'🏝️',title:'旅行计划 Travel Plans',desc:'订酒店、看地图，规划一场韩国之旅',
+  vocab:[V('여행','yeohaeng','旅行','제주도에 여행 가요.','去济州岛旅行。'),
+   V('예약하다','yeyakhada','预约','호텔을 예약했어요.','订好酒店了。'),
+   V('공항','gonghang','机场','공항에 가요.','去机场。'),
+   V('티켓','tiket','票','비행기 티켓을 샀어요.','买了机票。'),
+   V('지도','jido','地图','지도를 하나 샀어요.','买了一张地图。'),
+   V('날씨','nalssi','天气','날씨가 좋으면 산에 가요.','天气好就去爬山。'),
+   V('도착하다','dochakhada','到达','두 시에 도착해요.','两点到达。'),
+   V('사진','sajin','照片','사진을 많이 찍었어요.','拍了很多照片。')],
+  grammar:[{t:'目的「-(으)러 가다」与进行「-고 있다」',e:'去做某事：동사 + (으)러 가요. 例：밥을 먹으러 가요.\n正在进行：동사 + 고 있어요. 例：한국어를 공부하고 있어요.\n条件：-(으)면。例：날씨가 좋으면 갑시다.'}],
+  quiz:[Q('「여행 갈 거예요」表示？',["打算去旅行","去过旅行","别去旅行"],0,'-(으)ㄹ 거예요=打算/将会。'),
+   Q('「공부하고 있어요」表示？',["正在学习","学完了","想学习"],0,'-고 있어요=正在。'),
+   Q('「날씨가 좋으면 갑시다」中 -면 表示？',["条件","原因","转折"],0,'-(으)면=如果。')],
+  speak:[L('제주도에 여행 갈 거예요.','我打算去济州岛旅行。'),
+   L('공항에 두 시간 전에 도착해야 해요.','要提前两小时到机场。')],
+  listen:[{t:'호텔을 예약했어요.',zh:'订好酒店了。',q:'已经做了什么？',opts:['订酒店','买机票','收拾行李'],a:0},
+   {t:'날씨가 좋으면 산에 갑시다.',zh:'天气好就去爬山吧。',q:'条件是什么？',opts:['天气好','有空','周末'],a:0},
+   {t:'지도를 하나 샀어요.',zh:'买了一张地图。',q:'买了什么？',opts:['地图','票','照片'],a:0}]
+}],
+[ // TOPIK Ⅲ
+ {id:'ko-t3-1',icon:'💡',title:'意见表达 Opinions',desc:'有条理地表达观点，书面口语都加分',
+  vocab:[V('생각','saenggak','想法','제 생각에는 필요해요.','我认为有必要。'),
+   V('중요하다','jungyohada','重要','건강이 가장 중요해요.','健康最重要。'),
+   V('필요하다','pillyohada','需要','꾸준한 노력이 필요해요.','需要持续的努力。'),
+   V('경험','gyeongheom','经验','경험이 많으니까 물어보세요.','他经验多，问他吧。'),
+   V('노력','noryeok','努力','노력하면 잘할 수 있어요.','努力就能做好。'),
+   V('변화','byeonhwa','变化','조금씩 변화하고 있어요.','正在一点点变化。'),
+   V('꾸준하다','kkujunhada','持续的；稳定的','꾸준한 공부가 중요해요.','持续学习很重要。'),
+   V('건강','geongang','健康','운동은 건강에 좋아요.','运动有益健康。')],
+  grammar:[{t:'间接引语「-다고 생각하다」与原因「-기 때문에」',e:'认为：동사/형용사 + 다고 생각해요. 例：중요하다고 생각해요.\n原因：동사 + 기 때문에. 例：바쁘기 때문에 못 갔어요.\n书面：-(으)므로。'}],
+  quiz:[Q('「-다고 생각해요」表示？',["引用自己的想法","转述命令","提议"],0,'-다고 생각하다=认为～。'),
+   Q('「바쁘기 때문에」表示？',["因为忙","想忙","虽然忙"],0,'-기 때문에=因为。'),
+   Q('「필요하다」的意思？',["需要","重要","方便"],0,'필요하다=需要。')],
+  speak:[L('외국어 배우는 것은 매우 중요하다고 생각해요.','我认为学外语非常重要。'),
+   L('꾸준한 노력이 변화를 만듭니다.','持续的努力带来改变。')],
+  listen:[{t:'운동은 건강에 필요하다고 생각해요.',zh:'我认为运动对健康是必要的。',q:'说话的观点？',opts:['运动有必要','运动没必要','运动很危险'],a:0},
+   {t:'경험이 많으니까 물어보세요.',zh:'他经验多，去问他吧。',q:'建议做什么？',opts:['去问问他','自己查','别问他'],a:0},
+   {t:'조금씩 변화하고 있어요.',zh:'正在一点点变化。',q:'目前的状态？',opts:['正在变化','没有变化','变化结束了'],a:0}]
+}]
+]}
+;
+
+/* 定级测试题库：每级2题，共6题 */
+const PLACEMENT = {
+ en:[Q('___ name is Anna.',["My","Me","I"],0,'形容词性物主代词 My+名词。'),
+  Q('Nice ___ meet you.',["to","for","at"],0,'Nice to meet you 固定搭配。'),
+  Q('She ___ to school every day.',["go","goes","going"],1,'三单一般现在时动词加 es。'),
+  Q('I have lived here ___ 2019.',["for","since","at"],1,'since+时间点，for+时间段。'),
+  Q('If I ___ more time, I would travel more.',["have","had","will have"],1,'虚拟语气：if + 过去式。'),
+  Q('The report ___ by tomorrow.',["must finish","must be finished","must finishing"],1,'情态动词被动语态 must be done。')],
+ ja:[Q('「こんにちは」的使用时段是？',["白天","早上","深夜"],0,'こんにちは用于白天问候。'),
+  Q('「私は学生____」填空',["です","ます","でしたね"],0,'名词谓语用です。'),
+  Q('「昨日、本を読み____」填空',["ます","ました","て"],1,'昨日+过去式ました。'),
+  Q('「ここに座____もいいですか」填空',["っ","て","た"],0,'座る→座ってもいい（促音っ）。'),
+  Q('「いらっしゃる」是哪个动词的尊敬语？',["いる/行く","食べる","読む"],0,'いらっしゃる=いる/行く的尊敬语。'),
+  Q('「お待たせしました」属于哪类敬语？',["谦让语","尊敬语","美化语"],0,'压低自己动作为谦让语。')],
+ ko:[Q('「안녕하세요」的意思？',["你好","谢谢","再见"],0,'안녕하세요=你好。'),
+  Q('「저는 학생____」填空',["입니다","입니다까","이 아니다"],0,'陈述判断-입니다。'),
+  Q('「비빔밥 하나____」填空',["주세요","가세요","입니다"],0,'-주세요=请给我。'),
+  Q('「공부하고 있어요」表示？',["正在学习","想学习","学完了"],0,'-고 있어요=正在。'),
+  Q('「만날까요?」表示？',["提议见面","过去见面","禁止见面"],0,'-(으)ㄹ까요=提议。'),
+  Q('「중요하다고 생각해요」中 -다고 생각하다 表示？',["认为","命令","感叹"],0,'-다고 생각하다=认为/引用想法。')]
+};
+
+/* 徽章体系 */
+const BADGES = [
+ {id:'welcome',icon:'🎉',name:'初来乍到',desc:'成功注册语跃，开启学习之旅'},
+ {id:'first_lesson',icon:'🚀',name:'启程之光',desc:'完成人生第一节课'},
+ {id:'streak3',icon:'🔥',name:'三日之约',desc:'连续学习 3 天'},
+ {id:'streak7',icon:'⭐',name:'一周之星',desc:'连续学习 7 天'},
+ {id:'vocab50',icon:'📚',name:'词汇收集家',desc:'累计学习 50 个单词'},
+ {id:'grammar_ace',icon:'✏️',name:'语法小达人',desc:'语法练习获得满分'},
+ {id:'speak_first',icon:'🗣️',name:'勇敢开口',desc:'完成首次口语跟读'},
+ {id:'listen_ear',icon:'👂',name:'灵敏之耳',desc:'听力训练获得满分'},
+ {id:'lesson5',icon:'🎓',name:'课程加速器',desc:'完成 5 节课'},
+ {id:'community',icon:'💬',name:'初识伙伴',desc:'在社区发布第一个帖子'},
+ {id:'like_giver',icon:'❤️',name:'热心点赞',desc:'第一次给帖子点赞'},
+ {id:'level5',icon:'🌟',name:'学海无涯',desc:'等级达到 5 级'},
+ {id:'polyglot',icon:'🌍',name:'多语之星',desc:'两门语言都有课程进度'}
+];
+
+/* 社区种子帖子 */
+const SEED_POSTS = [
+ {id:'sp1',name:'首尔漫步者',avatar:'🦊',tag:'#学习打卡',text:'TOPIKⅠ 出分啦！145 分🎉 每天跟读 20 分钟真的有用，口语的语感是骗不了人的。下一站 TOPIKⅡ 冲！',ts:'t-2h',likes:42,comments:[{name:'词汇收割机',avatar:'🐼',text:'恭喜恭喜！求分享跟读材料～'},{name:'东京打工人',avatar:'🐨',text:'太强了，沾沾喜气！'}]},
+ {id:'sp2',name:'东京打工人',avatar:'🐨',tag:'#方法分享',text:'五十音记忆心得：把平假名拆成图像记。「き」像一把钥匙(key)，「く」像嘴巴张开哭(ku)。一周就记熟了，比死抄快太多。',ts:'t-5h',likes:88,comments:[{name:'语言精灵',avatar:'🧚',text:'图像记忆法+1，片假名也适用！'}]},
+ {id:'sp3',name:'词汇收割机',avatar:'🐼',tag:'#求助提问',text:'求助：英语连读总是听不出来，"want to"变成"wanna"这种完全反应不过来，有没有针对性的听力练习推荐？',ts:'t-8h',likes:15,comments:[{name:'首尔漫步者',avatar:'🦊',text:'影子跟读！听一句跟一句，一个月见效。'}]},
+ {id:'sp4',name:'语言精灵',avatar:'🧚',tag:'#学习打卡',text:'连续打卡第 30 天✅ 语跃的复习队列太懂我了，每次快忘的时候单词就自动出现了。今天也顺手拿了个满分听力，开心！',ts:'t-1d',likes:66,comments:[]},
+ {id:'sp5',name:'夜猫子学韩语',avatar:'🦉',tag:'#资源推荐',text:'安利一个习惯：把手机系统语言切成日语/韩语，每天被迫沉浸 30 分钟，免费还高效。坚持两周你会发现单词量悄悄上涨。',ts:'t-1d',likes:103,comments:[{name:'东京打工人',avatar:'🐨',text:'试了，第一天连闹钟都关不掉😂'}]},
+ {id:'sp6',name:'영어를 사랑해',avatar:'🐰',tag:'#闲聊灌水',text:'今天用韩语点了炸鸡（치킨 하나 주세요!），店主阿姨夸我发音好，一整天的学习疲惫瞬间没了，学语言最大的快乐就是这个吧🌟',ts:'t-2d',likes:57,comments:[{name:'首尔漫步者',avatar:'🦊',text:'闪光时刻！恭喜！'}]}
+];
+
+/* 排行榜种子 */
+const LEADERS = [
+ {name:'语言精灵',avatar:'🧚',xp:2450},{name:'首尔漫步者',avatar:'🦊',xp:1980},
+ {name:'东京打工人',avatar:'🐨',xp:1730},{name:'词汇收割机',avatar:'🐼',xp:1520},
+ {name:'夜猫子学韩语',avatar:'🦉',xp:1210},{name:'영어를 사랑해',avatar:'🐰',xp:990},
+ {name:'Bonjour皮皮',avatar:'🐸',xp:760},{name:'五十音战神',avatar:'🐯',xp:540},
+ {name:'喜欢单词的猫',avatar:'🐱',xp:330},{name:'明天开始学',avatar:'🦥',xp:120}
+];
+
+const AVATARS=['🦊','🐼','🐯','🦁','🐨','🐸','🦄','🐙','🐰','🦉','🐱','🦖'];
+const GOALS=[20,40,80];
+const XP_PER={vocab:8,vocabReview:4,grammar:15,speak:25,listen:15,lessonBonus:50};
+</script>
+<script>
+/* ================= 核心：存储 / 会话 / 工具 ================= */
+const DB={
+  get(k,d){ try{ const v=localStorage.getItem('ll_'+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem('ll_'+k,JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem('ll_'+k); }catch(e){} }
+};
+let _me=null, _p=null, route={view:'dashboard',params:{}};
+const LKEYS=[]; // 会被课程数据填充的语言 id 列表（en/ja/ko）
+Object.keys(COURSES).forEach(k=>LKEYS.push(k));
+
+function me(){ return _me; }
+function P(){ return _p; }
+function saveMe(){ if(_me){ const users=DB.get('users',{}); users[_me.email]=_me; DB.set('users',users);} }
+function saveP(){ if(_me&&_p) DB.set('prog_'+_me.uid,_p); }
+
+function uid(){ return 'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function pad(n){ return n<10?'0'+n:''+n; }
+function dstr(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function today(){ return dstr(); }
+function yesterday(){ const d=new Date(); d.setDate(d.getDate()-1); return dstr(d); }
+function addDays(n){ const d=new Date(); d.setDate(d.getDate()+n); return dstr(d); }
+function daysAgo(n){ const d=new Date(); d.setDate(d.getDate()-n); return dstr(d); }
+function timeAgo(ts){
+  if(typeof ts==='string'&&ts.startsWith('t-')){ // 种子帖子相对时间
+    const mm={'t-2h':'2 小时前','t-5h':'5 小时前','t-8h':'8 小时前','t-1d':'昨天','t-2d':'2 天前'}; return mm[ts]||'最近';
+  }
+  const diff=Date.now()-ts;
+  if(diff<60000) return '刚刚';
+  if(diff<3600000) return Math.floor(diff/60000)+' 分钟前';
+  if(diff<86400000) return Math.floor(diff/3600000)+' 小时前';
+  if(diff<86400000*7) return Math.floor(diff/86400000)+' 天前';
+  return dstr(new Date(ts));
+}
+const LEVEL_T=[0,100,250,450,700,1000,1400,1900,2500,3200,4000,5000,6500];
+function levelOf(xp){ let lv=1; for(let i=1;i<LEVEL_T.length;i++){ if(xp>=LEVEL_T[i]) lv=i+1; } return lv; }
+function nextLevelXp(xp){ const lv=levelOf(xp); return lv<LEVEL_T.length?LEVEL_T[lv]:LEVEL_T[LEVEL_T.length-1]+1500; }
+function pct(a,b){ return b?Math.round(a/b*100):0; }
+
+function newProgress(){
+  return { xp:0, streak:{c:0,last:null}, history:{}, goal:40,
+    curLevel:{}, placement:{}, lessons:{},
+    stats:{vocab:{a:0,c:0},grammar:{a:0,c:0},speak:{a:0,c:0},listen:{a:0,c:0}},
+    srs:[], badges:{}, community:{posted:false,liked:false}, lastLesson:null, lastLang:null };
+}
+function ensureProgress(){ if(!_p){ _p=DB.get('prog_'+_me.uid,null); } if(!_p){ _p=newProgress(); saveP(); } }
+
+/* ---------- 提示 / 模态框 / 撒花 ---------- */
+function toast(msg,type,icon){
+  const t=document.createElement('div'); t.className='toast '+(type||'');
+  t.innerHTML=(icon?icon+' ':'')+esc(msg);
+  document.getElementById('toast-root').appendChild(t);
+  setTimeout(()=>{ t.style.transition='.4s'; t.style.opacity='0'; t.style.transform='translateY(-10px)'; setTimeout(()=>t.remove(),400); },2600);
+}
+function openModal(html,cls){ const r=document.getElementById('modal-root');
+  r.innerHTML='<div class="overlay" id="ovl"><div class="modal '+(cls||'')+'">'+html+'</div></div>';
+  document.getElementById('ovl').addEventListener('click',e=>{ if(e.target.id==='ovl') closeModal(); });
+}
+function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+
+function confetti(){
+  const colors=['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#38bdf8'];
+  for(let i=0;i<90;i++){
+    const c=document.createElement('div'); c.className='cf';
+    const s=6+Math.random()*8;
+    c.style.cssText='left:'+(Math.random()*100)+'vw;width:'+s+'px;height:'+(s*0.5+4)+'px;background:'+colors[i%colors.length]+';animation-duration:'+(2.2+Math.random()*1.6)+'s;animation-delay:'+(Math.random()*0.7)+'s;';
+    document.body.appendChild(c);
+  }
+  setTimeout(()=>document.querySelectorAll('.cf').forEach(n=>n.remove()),4600);
+}
+
+/* ---------- 语音：TTS / 语音识别 ---------- */
+const TTS_OK=('speechSynthesis' in window);
+function speak(text,lang,rate){
+  return new Promise(res=>{
+    if(!TTS_OK){ toast('当前浏览器不支持语音合成','bad'); return res(); }
+    try{
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang=lang||'en-US'; u.rate=rate||0.92;
+      let done=false; const fin=()=>{ if(!done){ done=true; res(); } };
+      u.onend=fin; u.onerror=fin; setTimeout(fin,9000);
+      speechSynthesis.speak(u);
+    }catch(e){ res(); }
+  });
+}
+const SR_Ctor=window.SpeechRecognition||window.webkitSpeechRecognition;
+function recogOnce(lang){
+  return new Promise((res,rej)=>{
+    if(!SR_Ctor){ rej(new Error('no-sr')); return; }
+    try{
+      const r=new SR_Ctor(); r.lang=lang||'en-US'; r.interimResults=false; r.maxAlternatives=3;
+      let got=false;
+      r.onresult=e=>{ got=true; const alts=[]; for(let i=0;i<e.results[0].length;i++) alts.push(e.results[0][i].transcript); res(alts); };
+      r.onerror=e=>{ rej(new Error(e.error||'sr-error')); };
+      r.onend=()=>{ if(!got) rej(new Error('no-speech')); };
+      r.start();
+    }catch(e){ rej(e); }
+  });
+}
+/* 相似度：字符级 Levenshtein */
+function similarity(a,b){
+  a=String(a).toLowerCase().replace(/[.,!?~;:'"()\[\]、。！？，；：''""…—·\s]/g,'');
+  b=String(b).toLowerCase().replace(/[.,!?~;:'"()\[\]、。！？，；：''""…—·\s]/g,'');
+  if(!a||!b) return 0;
+  if(a===b) return 100;
+  const m=a.length,n=b.length, dp=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+  for(let j=0;j<=n;j++) dp[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1,dp[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return Math.max(0,Math.round((1-dp[m][n]/Math.max(m,n))*100));
+}
+
+/* ---------- 经验值 / 连续打卡 / 复习记忆 ---------- */
+function addXP(n,reason){
+  const p=P(); p.xp+=n;
+  p.history[today()]=(p.history[today()]||0)+n;
+  // 连续打卡
+  if(p.streak.last!==today()){
+    p.streak.c=(p.streak.last===yesterday())?p.streak.c+1:1;
+    p.streak.last=today();
+  }
+  saveP(); refreshTopbar();
+  if(reason) toast('+'+n+' XP · '+reason,'ok','⚡');
+  checkBadges();
+}
+function recordStat(mod,correct){
+  const s=P().stats[mod]; s.a++; if(correct) s.c++; saveP();
+}
+function findLesson(lid){
+  for(const lg of LKEYS) for(let li=0;li<COURSES[lg].length;li++)
+    for(let oi=0;oi<COURSES[lg][li].length;oi++)
+      if(COURSES[lg][li][oi].id===lid) return {lang:lg,lv:li,idx:oi,lesson:COURSES[lg][li][oi]};
+  return null;
+}
+function lessonDone(lid){ const l=P().lessons[lid]; return l&&l.done; }
+function setModuleScore(lid,mod,scorePct){
+  const p=P(); if(!p.lessons[lid]) p.lessons[lid]={vocab:0,grammar:0,speak:0,listen:0,done:false};
+  p.lessons[lid][mod]=Math.max(p.lessons[lid][mod]||0,Math.round(scorePct));
+  const les=p.lessons[lid];
+  const all=['vocab','grammar','speak','listen'].every(m=>les[m]>0);
+  let firstDone=false;
+  if(all&&!les.done){ les.done=true; firstDone=true; }
+  saveP(); return firstDone;
+}
+function upsertSRS(items,lang,lid){
+  const p=P();
+  items.forEach(v=>{
+    const key=v.w+'|'+lid;
+    if(!p.srs.some(s=>s.w+'|'+s.lid===key)){
+      p.srs.push({w:v.w,r:v.r,zh:v.zh,ex:v.ex,exZh:v.exZh,lang,lid,box:0,next:addDays(1)});
+    }
+  });
+  saveP();
+}
+function reviewSRS(word,ok){
+  const item=P().srs.find(s=>s.w===word.w&&s.lid===word.lid);
+  if(!item) return;
+  if(ok){ item.box=Math.min(item.box+1,4); item.next=addDays([1,2,4,7,15][item.box]); }
+  else { item.box=0; item.next=addDays(1); }
+  saveP();
+}
+function dueReviews(){ const t=today(); return P().srs.filter(s=>s.next<=t); }
+function accOf(mod){ const s=P().stats[mod]; return s.a?s.c/s.a:0; }
+function wordsLearned(){ return P().srs.length; }
+function lessonsDoneCount(){ return Object.values(P().lessons).filter(l=>l.done).length; }
+function langProgress(lang){
+  const lv=P().curLevel[lang]||0;
+  const lessons=COURSES[lang][lv]||[];
+  const done=lessons.filter(l=>lessonDone(l.id)).length;
+  return {lv,done,total:lessons.length,pct:pct(done,lessons.length)};
+}
+</script>
+<script>
+/* ================= 登录 / 注册 ================= */
+const FLOATS=[['Hello',6,18,0],['こんにちは',62,12,1.2],['안녕하세요',70,66,0.6],['Bonjour',12,72,1.8],['Hola',48,84,0.3],['Ciao',82,38,2.2],['سلام',30,42,1.5]];
+let reg={avatar:AVATARS[0],langs:['en']};
+
+function renderAuth(mode){
+  const v=document.getElementById('auth-view');
+  v.classList.remove('hidden'); document.getElementById('app-view').classList.add('hidden');
+  const floats=FLOATS.map(f=>'<div class="float-chip" style="left:'+f[1]+'%;top:'+f[2]+'%;animation-delay:'+f[3]+'s">'+f[0]+'</div>').join('');
+  const feats=[['🎯','分级课程体系 A1→C1 / N5→N3 / TOPIKⅠ→Ⅲ'],['🃏','单词·语法·口语·听力四大互动模块'],['📈','学习进度追踪与个性化路径推荐'],['🏆','社区交流 + 成就激励，越学越上瘾']];
+  v.innerHTML=`
+  <div class="auth-left">
+    ${floats}
+    <div class="brand"><div class="logo">🌐</div>语跃 LinguaLeap</div>
+    <div class="auth-slogan">一门外语，<br>一次跃迁。</div>
+    <div class="auth-desc">沉浸式多语种学习平台，覆盖英语、日语、韩语等主流语言。从零基础到进阶，让每一天的学习都有回响。</div>
+    <div class="auth-feats">${feats.map(f=>'<div class="auth-feat"><span>'+f[0]+'</span>'+f[1]+'</div>').join('')}</div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button id="tab-login" class="${mode!=='reg'?'on':''}">登录</button>
+        <button id="tab-reg" class="${mode==='reg'?'on':''}">注册</button>
+      </div>
+      <div id="auth-body"></div>
+    </div>
+  </div>`;
+  document.getElementById('tab-login').onclick=()=>renderAuth('login');
+  document.getElementById('tab-reg').onclick=()=>renderAuth('reg');
+  if(mode==='reg') renderRegBody(); else renderLoginBody();
+}
+function renderLoginBody(){
+  document.getElementById('auth-body').innerHTML=`
+   <h2 style="font-size:22px;margin-bottom:6px">欢迎回来 👋</h2>
+   <p class="muted small" style="margin-bottom:20px">继续你的多语种学习之旅</p>
+   <form id="login-form">
+     <div class="field"><label>邮箱</label><input id="li-email" type="email" placeholder="you@example.com" required></div>
+     <div class="field"><label>密码</label><input id="li-pwd" type="password" placeholder="请输入密码" required></div>
+     <button class="btn pri lg block" type="submit">登 录</button>
+   </form>
+   <div class="divider"></div>
+   <button class="btn ghost block" id="btn-demo" style="margin-bottom:10px">✨ 使用演示账号体验</button>
+   <button class="btn soft block" id="btn-guest">🚀 游客快速体验</button>`;
+  document.getElementById('login-form').onsubmit=e=>{
+    e.preventDefault();
+    login(document.getElementById('li-email').value.trim(),document.getElementById('li-pwd').value);
+  };
+  document.getElementById('btn-demo').onclick=()=>login('demo@lingualeap.cn','demo123');
+  document.getElementById('btn-guest').onclick=()=>{
+    const email='guest_'+Date.now().toString(36)+'@guest.cn';
+    doRegister('游客同学',email,'guest123','🐨',['en'],true);
+  };
+}
+function renderRegBody(){
+  document.getElementById('auth-body').innerHTML=`
+   <h2 style="font-size:22px;margin-bottom:6px">创建账号 🌱</h2>
+   <p class="muted small" style="margin-bottom:20px">选择一个形象，告诉我们你想学的语言</p>
+   <form id="reg-form">
+     <div class="field"><label>选择头像</label><div class="ava-row" id="ava-row">
+       ${AVATARS.map(a=>'<div class="ava-pick '+(a===reg.avatar?'on':'')+'" data-a="'+a+'">'+a+'</div>').join('')}
+     </div></div>
+     <div class="field"><label>昵称</label><input id="rg-name" placeholder="给自己起个学习昵称" required maxlength="16"></div>
+     <div class="field"><label>邮箱</label><input id="rg-email" type="email" placeholder="you@example.com" required></div>
+     <div class="field"><label>密码（至少 6 位）</label><input id="rg-pwd" type="password" minlength="6" placeholder="请输入密码" required></div>
+     <div class="field"><label>想学的语言（可多选）</label><div class="chips" id="lang-chips">
+       ${LKEYS.map(k=>'<span class="chip '+(reg.langs.includes(k)?'on':'')+'" data-l="'+k+'">'+LANGS[k].flag+' '+LANGS[k].name+'</span>').join('')}
+     </div></div>
+     <button class="btn pri lg block" type="submit" style="margin-top:6px">注 册</button>
+   </form>`;
+  document.querySelectorAll('#ava-row .ava-pick').forEach(n=>n.onclick=()=>{
+    reg.avatar=n.dataset.a;
+    document.querySelectorAll('#ava-row .ava-pick').forEach(x=>x.classList.toggle('on',x.dataset.a===reg.avatar));
+  });
+  document.querySelectorAll('#lang-chips .chip').forEach(n=>n.onclick=()=>{
+    const l=n.dataset.l;
+    if(reg.langs.includes(l)){ if(reg.langs.length>1) reg.langs=reg.langs.filter(x=>x!==l); }
+    else reg.langs.push(l);
+    n.classList.toggle('on',reg.langs.includes(l));
+  });
+  document.getElementById('reg-form').onsubmit=e=>{
+    e.preventDefault();
+    doRegister(document.getElementById('rg-name').value.trim(),
+      document.getElementById('rg-email').value.trim(),
+      document.getElementById('rg-pwd').value, reg.avatar, reg.langs.slice(), false);
+  };
+}
+function hashPwd(p){ let h=0; for(let i=0;i<p.length;i++){ h=(h<<5)-h+p.charCodeAt(i); h|=0; } return 'h'+h; }
+function doRegister(name,email,pwd,avatar,langs,silent){
+  const users=DB.get('users',{});
+  if(users[email]){ toast('该邮箱已注册，请直接登录','bad'); renderAuth('login'); return; }
+  const u={uid:uid(),name,email,pwd:hashPwd(pwd),avatar,langs,created:Date.now()};
+  users[email]=u; DB.set('users',users);
+  DB.set('prog_'+u.uid,newProgress());
+  if(!silent) toast('注册成功，欢迎加入语跃！','ok','🎉');
+  setSession(u);
+}
+function login(email,pwd){
+  const users=DB.get('users',{});
+  const u=users[email];
+  if(!u||u.pwd!==hashPwd(pwd)){ toast('邮箱或密码错误','bad'); return; }
+  toast('欢迎回来，'+u.name+'！','ok','👋');
+  setSession(u);
+}
+function setSession(u){
+  DB.set('session',u.uid);
+  _me=u; _p=null; ensureProgress();
+  enterApp();
+}
+function logout(){
+  DB.del('session'); _me=null; _p=null;
+  toast('已退出登录，期待再见 👋');
+  renderAuth('login');
+}
+
+/* ---------- 演示账号 ---------- */
+function ensureDemoUser(){
+  const users=DB.get('users',{});
+  if(!users['demo@lingualeap.cn']){
+    const u={uid:'demo-user',name:'小语（演示）',email:'demo@lingualeap.cn',pwd:hashPwd('demo123'),avatar:'🦊',langs:['en','ja'],created:Date.now()};
+    users['demo@lingualeap.cn']=u; DB.set('users',users);
+    DB.set('prog_demo-user',makeDemoProgress());
+  }
+}
+function makeDemoProgress(){
+  const p=newProgress();
+  p.xp=520; p.goal=40; p.streak={c:4,last:yesterday()};
+  const xs=[38,42,0,45,30,0,55,40,28,0,46,35,50,22];
+  xs.forEach((v,i)=>{ if(v) p.history[daysAgo(i+1)]=v; });
+  // 完成课程：英语 A1 第1课全部完成、第2课完成单词+语法；日语 N5 第1课完成单词
+  p.lessons['en-a1-1']={vocab:100,grammar:100,speak:86,listen:100,done:true};
+  p.lessons['en-a1-2']={vocab:88,grammar:67,speak:0,listen:0,done:false};
+  p.lessons['ja-n5-1']={vocab:100,grammar:0,speak:0,listen:0,done:false};
+  p.stats={vocab:{a:26,c:22},grammar:{a:14,c:11},speak:{a:8,c:7},listen:{a:12,c:11}};
+  const enV=COURSES.en[0][0].vocab, enV2=COURSES.en[0][1].vocab, jaV=COURSES.ja[0][0].vocab;
+  enV.forEach((v,i)=>p.srs.push({...v,lang:'en',lid:'en-a1-1',box:2,next:daysAgo(0)}));
+  enV2.slice(0,4).forEach((v,i)=>p.srs.push({...v,lang:'en',lid:'en-a1-2',box:1,next:daysAgo(-2)}));
+  jaV.slice(0,5).forEach(v=>p.srs.push({...v,lang:'ja',lid:'ja-n5-1',box:1,next:daysAgo(-1)}));
+  p.badges={welcome:Date.now()-86400000*12,first_lesson:Date.now()-86400000*10,speak_first:Date.now()-86400000*9};
+  p.curLevel={en:0,ja:0}; p.placement={}; p.lastLesson={lid:'en-a1-2',ts:Date.now()-86400000}; p.lastLang='en';
+  p.community={posted:false,liked:false};
+  return p;
+}
+
+/* ================= 应用框架 / 路由 ================= */
+const NAV=[
+  {sec:'学习'},
+  {id:'dashboard',ic:'🏠',t:'首页'},
+  {id:'courses',ic:'📚',t:'课程库'},
+  {id:'path',ic:'🧭',t:'学习路径'},
+  {id:'progress',ic:'📈',t:'学习进度'},
+  {sec:'社区与激励'},
+  {id:'community',ic:'👥',t:'学习社区'},
+  {id:'achievements',ic:'🏆',t:'成就殿堂'},
+  {id:'profile',ic:'👤',t:'个人中心'}
+];
+const VIEW_TITLES={dashboard:'学习首页',courses:'课程库',path:'学习路径',progress:'学习进度',community:'学习社区',achievements:'成就殿堂',profile:'个人中心',lesson:'课程学习',review:'单词复习'};
+
+function enterApp(){
+  document.getElementById('auth-view').classList.add('hidden');
+  document.getElementById('app-view').classList.remove('hidden');
+  renderShell();
+  go('dashboard');
+}
+function go(view,params){
+  route={view,params:params||{}};
+  renderView();
+}
+function renderShell(){
+  document.getElementById('sidebar').innerHTML=`
+    <div class="s-logo"><div class="logo">🌐</div><span>语跃 LinguaLeap</span></div>
+    <nav class="s-nav">
+      ${NAV.map(n=>n.sec?'<div class="nav-sec">'+n.sec+'</div>':
+        '<a data-go="'+n.id+'" class="'+(route.view===n.id?'on':'')+'"><span class="ic">'+n.ic+'</span><span class="txt">'+n.t+'</span></a>').join('')}
+    </nav>
+    <div class="s-foot" id="s-foot"></div>`;
+  document.querySelectorAll('.s-nav a').forEach(a=>a.onclick=()=>go(a.dataset.go));
+  renderSideFoot(); refreshTopbar();
+}
+function renderSideFoot(){
+  const u=me();
+  document.getElementById('s-foot').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;cursor:pointer" id="s-user">
+      <div class="p-ava" style="width:36px;height:36px;font-size:18px">${u.avatar}</div>
+      <div class="s-user-info">
+        <div style="color:#fff;font-weight:700;font-size:13.5px">${esc(u.name)}</div>
+        <div style="font-size:11.5px;color:#8f94c9">Lv.${levelOf(P().xp)} · ${P().xp} XP</div>
+      </div>
+    </div>`;
+  document.getElementById('s-user').onclick=()=>go('profile');
+}
+function refreshTopbar(){
+  const u=me(); if(!u) return;
+  const t=document.getElementById('topbar'); if(!t) return;
+  const due=dueReviews().length;
+  t.innerHTML=`
+    <div class="tb-title">${VIEW_TITLES[route.view]||'语跃'}</div>
+    <div class="tb-right">
+      ${due?'<div class="pill" style="cursor:pointer;box-shadow:0 0 0 2px rgba(236,72,153,.25)" onclick="startReview()" title="有待复习单词">🔔 待复习 '+due+'</div>':''}
+      <div class="pill">🔥 连续 ${P().streak.c} 天</div>
+      <div class="pill">⚡ ${P().xp} XP</div>
+      <div class="tb-ava" onclick="go('profile')" title="个人中心">${u.avatar}</div>
+    </div>`;
+}
+function renderView(){
+  renderSideFoot(); refreshTopbar();
+  const el=document.getElementById('view');
+  el.classList.remove('fade-in'); void el.offsetWidth; el.classList.add('fade-in');
+  switch(route.view){
+    case 'dashboard': el.innerHTML=renderDashboard(); bindDashboard(); break;
+    case 'courses': el.innerHTML=renderCourses(); bindCourses(); break;
+    case 'lesson': renderLessonView(el); break;
+    case 'review': renderReviewView(el); break;
+    case 'progress': el.innerHTML=renderProgress(); break;
+    case 'path': el.innerHTML=renderPath(); bindPath(); break;
+    case 'community': el.innerHTML=renderCommunity(); bindCommunity(); break;
+    case 'achievements': el.innerHTML=renderAchievements(); break;
+    case 'profile': el.innerHTML=renderProfile(); bindProfile(); break;
+    default: el.innerHTML='<div class="empty">页面不存在</div>';
+  }
+  window.scrollTo(0,0);
+}
+
+/* ================= 首页仪表盘 ================= */
+function greeting(){
+  const h=new Date().getHours();
+  if(h<6) return '夜深了';
+  if(h<12) return '早上好';
+  if(h<14) return '中午好';
+  if(h<18) return '下午好';
+  return '晚上好';
+}
+function ringSvg(p,dark,size){
+  size=size||92; const r=(size-14)/2, c=2*Math.PI*r, off=c*(1-Math.min(1,p));
+  return `<div class="ring-wrap" style="width:${size}px;height:${size}px">
+    <svg width="${size}" height="${size}">
+      <circle class="${dark?'ring-bg2':'ring-bg'}" cx="${size/2}" cy="${size/2}" r="${r}"></circle>
+      <circle class="ring-i ${dark?'dark':''}" cx="${size/2}" cy="${size/2}" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${off}"></circle>
+    </svg>
+    <div class="ring-txt" style="${dark?'color:var(--ink)':''}">${Math.round(p*100)}<span style="font-size:11px">%</span></div>
+  </div>`;
+}
+function renderDashboard(){
+  const u=me(), p=P();
+  const todayXp=p.history[today()]||0;
+  const goalPct=Math.min(1,todayXp/p.goal);
+  const recs=buildRecs();
+  const posts=getPosts().slice().sort((a,b)=>(b.likes.length||b.likes||0)-(a.likes.length||a.likes||0)).slice(0,2);
+  const lastLid=p.lastLesson?p.lastLesson.lid:(recs[0]&&recs[0].lid)||COURSES[u.langs[0]||'en'][0][0].id;
+  const mods=[['vocab','🃏','单词记忆','闪卡 + 间隔重复','var(--ok)'],['grammar','✍️','语法练习','即学即练','var(--p1)'],['speak','🎤','口语跟读','AI 发音评分','var(--p3)'],['listen','🎧','听力训练','真人语速','var(--warn)']];
+  return `
+  <div class="hero-banner">
+    <div>
+      <h2>${greeting()}，${esc(u.name)}！</h2>
+      <p>${todayXp>=p.goal?'今日目标已达成，太棒了！🎉':(p.streak.last!==today()?'今天还没学习哦，保持连续打卡 '+p.streak.c+' 天的纪录！':'今天已获得 '+todayXp+' XP，继续加油！')}</p>
+      <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+        <button class="btn lg" style="background:#fff;color:var(--p1)" onclick="continueLesson()">▶ 继续学习</button>
+        ${dueReviews().length?'<button class="btn lg" style="background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.4)" onclick="startReview()">🔔 复习 '+dueReviews().length+' 个单词</button>':''}
+      </div>
+    </div>
+    <div style="text-align:center">
+      ${ringSvg(goalPct)}
+      <div class="small" style="margin-top:8px;opacity:.9">今日 ${todayXp} / ${p.goal} XP</div>
+    </div>
+  </div>
+  <div class="grid4" style="margin:18px 0">
+    <div class="stat-card"><div class="sc-ic" style="background:var(--warnbg)">🔥</div><div><div class="sc-num">${p.streak.c}</div><div class="sc-label">连续学习天数</div></div></div>
+    <div class="stat-card"><div class="sc-ic" style="background:#eef0ff">⚡</div><div><div class="sc-num">${p.xp}</div><div class="sc-label">累计经验值</div></div></div>
+    <div class="stat-card"><div class="sc-ic" style="background:var(--okbg)">📚</div><div><div class="sc-num">${wordsLearned()}</div><div class="sc-label">掌握单词量</div></div></div>
+    <div class="stat-card"><div class="sc-ic" style="background:#fde7f3">🏆</div><div><div class="sc-num">${Object.keys(p.badges).length}<span class="muted" style="font-size:14px">/${BADGES.length}</span></div><div class="sc-label">获得成就</div></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h"><div class="t">🧭 今日推荐</div><a class="small" style="cursor:pointer" onclick="go('path')">查看学习路径 →</a></div>
+      ${recs.slice(0,4).map((r,i)=>`
+        <div class="rec-card" style="margin-bottom:12px">
+          <div class="rec-ic" style="background:${r.bg}">${r.icon}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:14.5px;margin-bottom:3px">${r.title}</div>
+            <div class="small muted">${r.desc}</div>
+          </div>
+          <button class="btn soft sm" onclick="${r.action}">${r.btn}</button>
+        </div>`).join('')||'<div class="empty">暂无推荐</div>'}
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:18px">
+        <div class="card-h"><div class="t">⚡ 快速开始</div></div>
+        <div class="grid4">
+          ${mods.map(m=>`<div class="rec-card" style="flex-direction:column;align-items:center;text-align:center;cursor:pointer;padding:16px 8px" onclick="startLesson('${lastLid}','${m[0]}')">
+            <div class="rec-ic" style="background:${m[4]}1a;margin-bottom:8px">${m[1]}</div>
+            <div style="font-weight:700;font-size:13.5px">${m[2]}</div>
+            <div class="small muted" style="margin-top:2px">${m[3]}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="t">🔥 社区精选</div><a class="small" style="cursor:pointer" onclick="go('community')">进入社区 →</a></div>
+        ${posts.map(post=>`<div style="padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer" onclick="go('community')">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px">
+            <div class="p-ava" style="width:30px;height:30px;font-size:15px">${post.avatar}</div>
+            <span style="font-weight:700;font-size:13.5px">${esc(post.name)}</span>
+            <span class="tag" style="background:#eef0ff;color:var(--p1)">${post.tag}</span>
+          </div>
+          <div class="small" style="line-height:1.7;color:#3c4166;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(post.text)}</div>
+          <div class="small muted" style="margin-top:6px">❤️ ${post.likes} · 💬 ${post.comments.length}</div>
+        </div>`).join('')||'<div class="empty"><div class="e-ic">👥</div>还没有帖子，去社区发第一帖吧</div>'}
+      </div>
+    </div>
+  </div>`;
+}
+function bindDashboard(){}
+function continueLesson(){
+  const p=P();
+  if(p.lastLesson&&findLesson(p.lastLesson.lid)) startLesson(p.lastLesson.lid);
+  else go('courses');
+}
+</script>
+<script>
+/* ================= 课程库 ================= */
+const EL=id=>document.getElementById(id);
+const MODS=['vocab','grammar','speak','listen'];
+const MOD_META={vocab:['单词记忆','🃏'],grammar:['语法练习','✍️'],speak:['口语跟读','🎤'],listen:['听力训练','🎧']};
+let courseTab={lang:null,open:{}};
+
+function renderCourses(){
+  const u=me();
+  if(!courseTab.lang) courseTab.lang=(u.langs&&u.langs[0])||'en';
+  const lang=courseTab.lang, LG=LANGS[lang];
+  const placed=P().placement[lang];
+  if(courseTab.open[lang]===undefined) courseTab.open[lang]=P().curLevel[lang]||0;
+  let html=`
+  <div class="tabs">${LKEYS.map(k=>`<button class="tab ${k===lang?'on':''}" data-lang="${k}">${LANGS[k].flag} ${LANGS[k].name}</button>`).join('')}</div>
+  ${placed===undefined?`
+  <div class="card" style="display:flex;align-items:center;gap:16px;background:linear-gradient(120deg,#eef0ff,#fdeef8);margin-bottom:18px">
+    <div style="font-size:34px">🎯</div>
+    <div style="flex:1"><div style="font-weight:800;font-size:15.5px;margin-bottom:4px">还不知道自己的${LG.name}水平？</div>
+    <div class="small muted">花 1 分钟做一套定级测试，我们会为你规划从哪一级开始学</div></div>
+    <button class="btn pri" onclick="openPlacement('${lang}')">开始定级测试</button>
+  </div>`:
+  `<div class="small muted" style="margin-bottom:14px">🎯 定级结果：${LG.levels[placed].label}（可在测试后调整，也可以自由选择任意级别）</div>`}
+  `;
+  LG.levels.forEach((lv,li)=>{
+    const lessons=COURSES[lang][li]||[];
+    const done=lessons.filter(l=>lessonDone(l.id)).length;
+    const open=courseTab.open[lang]===li;
+    html+=`<div class="level-block">
+      <div class="level-head" data-lv="${li}">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div class="lv-badge" style="background:${lv.color}">${lv.cls}</div>
+          <div><div style="font-weight:800;font-size:15.5px">${lv.label}</div>
+          <div class="small muted">${lessons.length} 节课 · 已完成 ${done}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${placed===li?'<span class="tag" style="background:var(--okbg);color:var(--ok)">推荐起点</span>':''}
+          <div style="width:120px"><div class="bar"><div class="bar-i" style="width:${pct(done,lessons.length)}%;background:${lv.color}"></div></div></div>
+          <span class="muted">${open?'▾':'▸'}</span>
+        </div>
+      </div>`;
+    if(open){
+      html+='<div class="fade-in">';
+      lessons.forEach((les,oi)=>{
+        const rec=P().lessons[les.id]||{vocab:0,grammar:0,speak:0,listen:0,done:false};
+        const state=rec.done?'done':(MODS.some(m=>rec[m]>0)?'part':'new');
+        html+=`<div class="lesson-row">
+          <div class="lr-icon">${les.icon}</div>
+          <div class="lr-main">
+            <div class="lr-title">${les.title} ${state==='done'?'<span class="tag" style="background:var(--okbg);color:var(--ok)">✔ 已完成</span>':''}</div>
+            <div class="small muted">${les.desc}</div>
+            <div class="module-dots">${MODS.map(m=>`<div class="md ${rec[m]>0?'done':''}" title="${MOD_META[m][0]} ${rec[m]}%"></div>`).join('')}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:800;font-size:15px;color:${rec.done?'var(--ok)':'var(--p1)'}">${rec.done?'100':pct(MODS.reduce((s,m)=>s+(rec[m]>0?1:0),0),4)}%</div>
+            <button class="btn ${state==='new'?'pri':'soft'} sm" style="margin-top:6px" onclick="startLesson('${les.id}')">${state==='done'?'重新学':state==='part'?'继续学':'开始学'}</button>
+          </div>
+        </div>`;
+      });
+      html+='</div>';
+    }
+    html+='</div>';
+  });
+  return html;
+}
+function bindCourses(){
+  document.querySelectorAll('.tab[data-lang]').forEach(b=>b.onclick=()=>{ courseTab.lang=b.dataset.lang; courseTab.open[b.dataset.lang]=P().curLevel[b.dataset.lang]||0; renderView(); });
+  document.querySelectorAll('.level-head').forEach(h=>h.onclick=()=>{
+    const lang=courseTab.lang, li=+h.dataset.lv;
+    courseTab.open[lang]=courseTab.open[lang]===li?-1:li; renderView();
+  });
+}
+
+/* ================= 课程学习播放器 ================= */
+let LS=null;
+function startLesson(lid,mod){
+  const f=findLesson(lid); if(!f) return;
+  const p=P();
+  p.lastLesson={lid,ts:Date.now()}; p.lastLang=f.lang; saveP();
+  LS={lid,lesson:f.lesson,lang:f.lang,lv:f.lv,idx:f.idx,step:mod||'menu',flipped:false,
+      vi:0,ans:{known:0,fuzzy:0,unknown:0},xpGained:0,
+      gPhase:'learn',gi:0,gSel:null,gCorrect:0,
+      si:0,spScores:[],spSelfRate:false,
+      li:0,lSel:null,lCorrect:0};
+  go('lesson');
+}
+function lsTts(){ return LANGS[LS.lang].tts; }
+function lsWordClass(){ return LS.lang==='en'?'':'ja ko'; }
+function speakLS(kind,rate){
+  let t='';
+  if(kind==='w') t=LS.lesson.vocab[LS.vi]?LS.lesson.vocab[LS.vi].w:'';
+  else if(kind==='s') t=LS.lesson.speak[LS.si]?LS.lesson.speak[LS.si].t:'';
+  else if(kind==='l') t=LS.lesson.listen[LS.li]?LS.lesson.listen[LS.li].t:'';
+  if(t) return speak(t,lsTts(),rate);
+}
+
+function renderLessonView(el){
+  const S=LS, les=S.lesson, rec=P().lessons[S.lid]||{};
+  const dots=`<div class="step-dots">${MODS.map((m,i)=>{
+    const order=['vocab','grammar','speak','listen'];
+    const cur=order[S.step]!==undefined?order.indexOf(S.step):-1;
+    return `<div class="sd ${S.step===m?'cur':(rec[m]>0?'done':'')}"></div>`;
+  }).join('')}</div>`;
+  const back=S.step==='menu'?`onclick="go('courses')"`:`onclick="LS.step='menu';renderView()"`;
+  if(S.step==='menu'){ el.innerHTML=renderLSMenu(); bindMenu(); return; }
+  const head=`<div class="stage-wrap">
+    <div class="stage-top">
+      <button class="back" ${back}>← ${S.step==='menu'?'返回课程库':'返回课程目录'}</button>
+      <div style="font-weight:800;font-size:14px">${les.icon} ${esc(les.title)}</div>
+      ${dots}
+    </div>`;
+  let body='';
+  if(S.step==='vocab') body=renderVocab();
+  else if(S.step==='grammar') body=renderGrammar();
+  else if(S.step==='speak') body=renderSpeak();
+  else if(S.step==='listen') body=renderListen();
+  else if(S.step==='mdone') body=renderModuleDone();
+  else if(S.step==='done') body=renderLessonDone();
+  el.innerHTML=head+body+'</div>';
+  bindStep();
+}
+function renderLSMenu(){
+  const S=LS, les=S.lesson;
+  const rec=P().lessons[S.lid]||{vocab:0,grammar:0,speak:0,listen:0};
+  const nextMod=MODS.find(m=>!(rec[m]>0))||'vocab';
+  const done=P().lessons[S.lid]&&P().lessons[S.lid].done;
+  return `<div class="fade-in">
+    <div class="card" style="text-align:center;padding:34px 26px;margin-bottom:18px">
+      <div style="font-size:52px;margin-bottom:10px">${les.icon}</div>
+      <h2 style="font-size:22px;margin-bottom:8px">${esc(les.title)}</h2>
+      <p class="muted" style="margin-bottom:18px">${esc(les.desc)}</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:6px">
+        ${MODS.map(m=>`<div style="min-width:120px">
+          <div class="small muted" style="margin-bottom:5px">${MOD_META[m][1]} ${MOD_META[m][0]}</div>
+          <div class="bar"><div class="bar-i" style="width:${rec[m]||0}%"></div></div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="grid4">
+      ${MODS.map(m=>`<div class="rec-card" style="flex-direction:column;align-items:center;text-align:center;cursor:pointer;padding:20px 10px" onclick="LS.step='${m}';renderView()">
+        <div style="font-size:30px;margin-bottom:8px">${MOD_META[m][1]}</div>
+        <div style="font-weight:700">${MOD_META[m][0]}</div>
+        <div class="small muted" style="margin-top:4px">${rec[m]>0?'已完成 '+rec[m]+'%':(m===nextMod&&!done?'建议先学':'未开始')}</div>
+      </div>`).join('')}
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <button class="btn pri lg" onclick="LS.step='${done?'done':nextMod}';renderView()">${done?'🎉 查看课程完成页':'▶ 开始这一课'}</button>
+    </div>
+  </div>`;
+}
+function bindMenu(){}
+
+/* ---------- 模块 1：单词闪卡 ---------- */
+function renderVocab(){
+  const S=LS, v=S.lesson.vocab[S.vi], total=S.lesson.vocab.length;
+  if(S.vi>=total) return renderVocabSummary();
+  const cls=lsWordClass();
+  return `<div class="fade-in">
+    <div class="stage-top" style="margin-top:4px">
+      <span class="small muted">🃏 单词 ${S.vi+1} / ${total}</span>
+      <div style="width:200px"><div class="bar"><div class="bar-i" style="width:${pct(S.vi,total)}%"></div></div></div>
+    </div>
+    <div class="fc-stage">
+      <div class="fc" id="fc" onclick="this.classList.toggle('flip')">
+        <div class="fc-face front">
+          <div class="fc-lang">${LANGS[S.lang].flag} ${LANGS[S.lang].name}</div>
+          <div class="fc-word ${cls}">${esc(v.w)}</div>
+          <div class="muted" style="margin-top:10px">${esc(v.r)}</div>
+          <div style="margin-top:16px"><button class="snd-btn" onclick="event.stopPropagation();speakLS('w')" title="朗读">🔊</button></div>
+          <div class="fc-hint">点击卡片查看释义</div>
+        </div>
+        <div class="fc-face back">
+          <div class="fc-zh">${esc(v.zh)}</div>
+          <div class="fc-ex">${esc(v.ex)}<br><span style="opacity:.8;font-size:13px">${esc(v.exZh)}</span></div>
+          <div class="fc-hint" style="margin-top:14px;opacity:.8">再点一次可翻回</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-actions">
+      <button class="fc-btn red" onclick="vocabAnswer(0)">😵 不认识</button>
+      <button class="fc-btn amber" onclick="vocabAnswer(1)">🤔 模糊</button>
+      <button class="fc-btn green" onclick="vocabAnswer(2)">😄 认识</button>
+    </div>
+  </div>`;
+}
+function vocabAnswer(kind){
+  const S=LS, v=S.lesson.vocab[S.vi];
+  const ok=kind===2;
+  recordStat('vocab',ok);
+  reviewSRS(v,ok);
+  if(kind===2){ S.ans.known++; addXP(XP_PER.vocab,'记住单词'); }
+  else if(kind===1){ S.ans.fuzzy++; addXP(2); }
+  else S.ans.unknown++;
+  S.vi++; S.flipped=false; renderView();
+}
+function renderVocabSummary(){
+  const S=LS, total=S.lesson.vocab.length;
+  upsertSRS(S.lesson.vocab,S.lang,S.lid);
+  const score=Math.round(S.ans.known/total*100);
+  const first=setModuleScore(S.lid,'vocab',Math.max(score,10));
+  if(first) addXP(XP_PER.lessonBonus,'完成一课！');
+  return `<div class="fade-in" style="text-align:center;padding:30px 0">
+    <div style="font-size:50px">🃏</div>
+    <h3 style="font-size:20px;margin:12px 0">单词学习完成！</h3>
+    <p class="muted" style="margin-bottom:18px">认识 ${S.ans.known} · 模糊 ${S.ans.fuzzy} · 不认识 ${S.ans.unknown}（生词已加入复习计划）</p>
+    ${ringSvg(score/100,true,110)}
+    <div style="margin-top:26px;display:flex;gap:12px;justify-content:center">
+      <button class="btn ghost" onclick="startLesson('${S.lid}','vocab')">再学一遍</button>
+      <button class="btn pri" onclick="LS.step='menu';renderView()">返回课程目录</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- 模块 2：语法练习 ---------- */
+function renderGrammar(){
+  const S=LS, les=S.lesson, gp=les.grammar.length, qs=les.quiz.length;
+  if(S.gPhase==='learn'){
+    if(S.gi>=gp){ S.gPhase='quiz'; S.gi=0; return renderGrammar(); }
+    const g=les.grammar[S.gi];
+    return `<div class="fade-in">
+      <div class="stage-top" style="margin-top:4px"><span class="small muted">✍️ 语法讲解 ${S.gi+1} / ${gp}</span></div>
+      <div class="gram-card">
+        <h3>📐 ${esc(g.t)}</h3>
+        <div class="exp">${esc(g.e)}</div>
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:flex-end">
+        <button class="btn pri" onclick="LS.gi++;renderView()">${S.gi+1<gp?'下一个知识点 →':'开始练习 →'}</button>
+      </div>
+    </div>`;
+  }
+  if(S.gi>=qs) return renderGrammarSummary();
+  const q=les.quiz[S.gi];
+  const opts=q.opts.map((o,i)=>`<div class="q-opt ${S.gSel!==null?(i===q.a?'ok':(i===S.gSel?'bad':'dim')):''}" ${S.gSel===null?`onclick="grammarPick(${i})"`:''}>
+    <span class="ol">${'ABC'[i]||i+1}</span>${esc(o)}</div>`).join('');
+  return `<div class="fade-in">
+    <div class="stage-top" style="margin-top:4px">
+      <span class="small muted">✍️ 练习 ${S.gi+1} / ${qs} · 答对 ${S.gCorrect}</span>
+      <div style="width:200px"><div class="bar"><div class="bar-i" style="width:${pct(S.gi,qs)}%"></div></div></div>
+    </div>
+    <div class="q-card">
+      <div class="q-title">${esc(q.q)}</div>
+      ${opts}
+      ${S.gSel!==null?`<div class="q-why">${S.gSel===q.a?'✅ 回答正确！':'❌ 正确答案是 '+esc(q.opts[q.a])+'。'}${esc(q.why)}</div>
+      <div style="text-align:right;margin-top:8px"><button class="btn pri" onclick="grammarNext()">${S.gi+1<qs?'下一题 →':'查看结果'}</button></div>`:''}
+    </div>
+  </div>`;
+}
+function grammarPick(i){
+  const S=LS, q=S.lesson.quiz[S.gi];
+  S.gSel=i; const ok=i===q.a; recordStat('grammar',ok); if(ok){ S.gCorrect++; addXP(XP_PER.grammar,'语法正确'); }
+  renderView();
+}
+function grammarNext(){ LS.gi++; LS.gSel=null; renderView(); }
+function renderGrammarSummary(){
+  const S=LS, qs=S.lesson.quiz.length, score=Math.round(S.gCorrect/qs*100);
+  const first=setModuleScore(S.lid,'grammar',score);
+  if(first) addXP(XP_PER.lessonBonus,'完成一课！');
+  return `<div class="fade-in" style="text-align:center;padding:30px 0">
+    <div style="font-size:50px">✍️</div>
+    <h3 style="font-size:20px;margin:12px 0">语法练习完成！</h3>
+    <p class="muted" style="margin-bottom:18px">答对 ${S.gCorrect} / ${qs} 题</p>
+    ${ringSvg(score/100,true,110)}
+    <div style="margin-top:26px;display:flex;gap:12px;justify-content:center">
+      <button class="btn ghost" onclick="startLesson('${S.lid}','grammar')">再练一次</button>
+      <button class="btn pri" onclick="LS.step='menu';renderView()">返回课程目录</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- 模块 3：口语跟读 ---------- */
+function renderSpeak(){
+  const S=LS, items=S.lesson.speak;
+  if(S.si>=items.length) return renderSpeakSummary();
+  const s=items[S.si];
+  const showRes=S.lastScore!==undefined;
+  return `<div class="fade-in">
+    <div class="stage-top" style="margin-top:4px">
+      <span class="small muted">🎤 跟读 ${S.si+1} / ${items.length}</span>
+      <div style="width:200px"><div class="bar"><div class="bar-i" style="width:${pct(S.si,items.length)}%"></div></div></div>
+    </div>
+    <div class="speak-card">
+      <div class="muted small">请先听示范，然后大声跟读</div>
+      <div class="sp-text ${lsWordClass()}">${esc(s.t)}</div>
+      <div class="sp-zh">${esc(s.zh)}</div>
+      <div style="display:flex;gap:14px;justify-content:center;align-items:center">
+        <button class="btn soft" onclick="speakLS('s',0.82)">🔊 听示范</button>
+        <button class="btn ghost" onclick="speakLS('s',0.6)">🐢 慢速</button>
+      </div>
+      <div id="sp-area" style="margin-top:26px">
+        ${showRes?`
+          <div class="sp-score" style="color:${S.lastScore>=80?'var(--ok)':S.lastScore>=60?'var(--warn)':'var(--bad)'}">${S.lastScore} 分</div>
+          <div class="score-hip" style="margin-bottom:14px">${S.lastScore>=80?'发音太棒了！🎉':S.lastScore>=60?'不错的尝试，再练练更流畅 💪':'别灰心，多听几遍示范再试试'}</div>
+          ${S.lastScore>=60||S.tried>=2?
+            `<button class="btn pri" onclick="speakNext()">${S.si+1<items.length?'下一句 →':'完成口语练习'}</button>`:
+            `<div style="display:flex;gap:10px;justify-content:center">
+              <button class="btn ghost" onclick="LS.lastScore=undefined;LS.tried=(LS.tried||0)+1;renderView()">🎤 再试一次</button>
+              <button class="btn soft" onclick="speakSelf(0)">跳过这句</button>
+            </div>`}
+        `:`
+          <button class="mic-btn" id="mic" title="点击开始跟读">🎤</button>
+          <div class="small muted" style="margin-top:12px" id="mic-hint">${SR_Ctor?'点击麦克风，朗读上面的句子':'当前浏览器不支持语音识别，已启用自评模式（建议用 Chrome 获得评分）'}</div>
+          ${SR_Ctor?'':'<div style="display:flex;gap:10px;justify-content:center;margin-top:16px"><button class="btn pri" onclick="speakSelf(1)">😄 读得很棒</button><button class="btn ghost" onclick="speakSelf(0)">😅 还需练习</button></div>'}
+        `}
+      </div>
+    </div>
+  </div>`;
+}
+function bindSpeak(){
+  const mic=EL('mic'); if(!mic) return;
+  mic.onclick=async()=>{
+    mic.classList.add('rec'); EL('mic-hint').textContent='正在聆听……请朗读句子';
+    try{
+      const alts=await recogOnce(lsTts());
+      mic.classList.remove('rec');
+      const target=LS.lesson.speak[LS.si].t;
+      let best=0; alts.forEach(a=>{ best=Math.max(best,similarity(target,a)); });
+      LS.lastScore=Math.max(best, best>0?0:5); LS.tried=(LS.tried||0)+1;
+      const ok=LS.lastScore>=60; recordStat('speak',ok); if(ok) addXP(XP_PER.speak,'口语跟读');
+      renderView();
+    }catch(e){
+      mic.classList.remove('rec');
+      if(e.message==='no-sr'||e.message==='not-allowed'||e.message==='service-not-allowed'){ LS.spSelfRate=true; }
+      toast('未捕获到语音，试试自评模式','bad','🎙️');
+      LS.lastScore=undefined; renderView();
+    }
+  };
+}
+function speakSelf(ok){
+  const S=LS;
+  recordStat('speak',ok);
+  S.lastScore=ok?88:45; S.tried=(S.tried||0)+1;
+  if(ok) addXP(Math.round(XP_PER.speak*0.8),'口语跟读');
+  renderView();
+}
+function speakNext(){
+  const S=LS;
+  S.spScores.push(S.lastScore||0);
+  S.si++; S.lastScore=undefined; S.tried=0; renderView();
+}
+function renderSpeakSummary(){
+  const S=LS, avg=Math.round(S.spScores.reduce((a,b)=>a+b,0)/S.spScores.length);
+  const first=setModuleScore(S.lid,'speak',avg);
+  if(first) addXP(XP_PER.lessonBonus,'完成一课！');
+  return `<div class="fade-in" style="text-align:center;padding:30px 0">
+    <div style="font-size:50px">🎤</div>
+    <h3 style="font-size:20px;margin:12px 0">口语跟读完成！</h3>
+    <p class="muted" style="margin-bottom:18px">平均得分 ${avg} 分，继续保持开口的勇气！</p>
+    ${ringSvg(avg/100,true,110)}
+    <div style="margin-top:26px;display:flex;gap:12px;justify-content:center">
+      <button class="btn ghost" onclick="startLesson('${S.lid}','speak')">再来一轮</button>
+      <button class="btn pri" onclick="LS.step='menu';renderView()">返回课程目录</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- 模块 4：听力训练 ---------- */
+function renderListen(){
+  const S=LS, items=S.lesson.listen;
+  if(S.li>=items.length) return renderListenSummary();
+  const it=items[S.li];
+  const opts=it.opts.map((o,i)=>`<div class="q-opt ${S.lSel!==null?(i===it.a?'ok':(i===S.lSel?'bad':'dim')):''}" ${S.lSel===null?`onclick="listenPick(${i})"`:''}>
+    <span class="ol">${'ABC'[i]||i+1}</span>${esc(o)}</div>`).join('');
+  return `<div class="fade-in">
+    <div class="stage-top" style="margin-top:4px">
+      <span class="small muted">🎧 听力 ${S.li+1} / ${items.length} · 答对 ${S.lCorrect}</span>
+      <div style="width:200px"><div class="bar"><div class="bar-i" style="width:${pct(S.li,items.length)}%"></div></div></div>
+    </div>
+    <div class="q-card" style="text-align:center">
+      <div class="muted small">仔细听音频，回答下面的问题</div>
+      <div style="display:flex;gap:12px;justify-content:center;margin:16px 0 6px">
+        <button class="btn pri" onclick="speakLS('l',0.9)">▶️ 播放</button>
+        <button class="btn ghost" onclick="speakLS('l',0.55)">🐢 慢速播放</button>
+      </div>
+      <div class="q-title" style="margin-top:14px">❓ ${esc(it.q)}</div>
+      <div style="text-align:left">${opts}</div>
+      ${S.lSel!==null?`<div class="q-why" style="text-align:left">${S.lSel===it.a?'✅ 回答正确！':'❌ 正确答案是「'+esc(it.opts[it.a])+'」。'}原文：${esc(it.t)}（${esc(it.zh)}）</div>
+      <div style="text-align:right"><button class="btn pri" onclick="listenNext()">${S.li+1<items.length?'下一题 →':'查看结果'}</button></div>`:''}
+    </div>
+  </div>`;
+}
+function listenPick(i){
+  const S=LS, it=S.lesson.listen[S.li];
+  S.lSel=i; const ok=i===it.a; recordStat('listen',ok); if(ok){ S.lCorrect++; addXP(XP_PER.listen,'听力正确'); }
+  renderView();
+}
+function listenNext(){ LS.li++; LS.lSel=null; renderView(); }
+function renderListenSummary(){
+  const S=LS, n=S.lesson.listen.length, score=Math.round(S.lCorrect/n*100);
+  const first=setModuleScore(S.lid,'listen',score);
+  if(first) addXP(XP_PER.lessonBonus,'完成一课！');
+  return `<div class="fade-in" style="text-align:center;padding:30px 0">
+    <div style="font-size:50px">🎧</div>
+    <h3 style="font-size:20px;margin:12px 0">听力训练完成！</h3>
+    <p class="muted" style="margin-bottom:18px">答对 ${S.lCorrect} / ${n} 题</p>
+    ${ringSvg(score/100,true,110)}
+    <div style="margin-top:26px;display:flex;gap:12px;justify-content:center">
+      <button class="btn ghost" onclick="startLesson('${S.lid}','listen')">再听一遍</button>
+      <button class="btn pri" onclick="LS.step='menu';renderView()">返回课程目录</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- 模块完成 / 课程完成 ---------- */
+function renderModuleDone(){
+  return `<div class="fade-in" style="text-align:center;padding:40px 0">
+    <div style="font-size:52px">✅</div>
+    <h3 style="font-size:20px;margin:14px 0">模块完成！</h3>
+    <button class="btn pri" onclick="LS.step='menu';renderView()">返回课程目录</button>
+  </div>`;
+}
+function renderLessonDone(){
+  const S=LS, rec=P().lessons[S.lid]||{};
+  const next=findNextLesson();
+  return `<div class="fade-in" style="text-align:center;padding:30px 0">
+    <div style="font-size:64px">🎉</div>
+    <h2 style="font-size:24px;margin:14px 0 6px">课程完成，太棒了！</h2>
+    <p class="muted" style="margin-bottom:24px">${esc(S.lesson.title)} · 四大模块全部通关</p>
+    <div class="grid4" style="max-width:560px;margin:0 auto 26px">
+      ${MODS.map(m=>`<div class="stat-card" style="padding:14px"><div><div class="sc-num" style="font-size:19px;color:var(--ok)">${rec[m]||0}%</div><div class="sc-label">${MOD_META[m][1]} ${MOD_META[m][0]}</div></div></div>`).join('')}
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn ghost" onclick="go('courses')">返回课程库</button>
+      ${next?`<button class="btn pri" onclick="startLesson('${next.id}')">下一课：${next.icon} ${esc(next.title)} →</button>`:`<button class="btn pri" onclick="go('path')">查看学习路径 →</button>`}
+    </div>
+  </div>`;
+}
+function findNextLesson(){
+  const S=LS;
+  const levelLessons=COURSES[S.lang][S.lv];
+  if(S.idx+1<levelLessons.length) return levelLessons[S.idx+1];
+  if(S.lv+1<COURSES[S.lang].length) return COURSES[S.lang][S.lv+1][0];
+  return null;
+}
+function bindStep(){
+  if(LS.step==='speak') bindSpeak();
+  if(LS.step==='done'&&!LS.confettied){ LS.confettied=true; confetti(); }
+}
+
+/* ================= 单词复习（间隔重复） ================= */
+let RS=null;
+function startReview(){
+  const due=dueReviews();
+  if(!due.length){ toast('太棒了，今天没有待复习的单词！'); return; }
+  RS={items:due,i:0,ok:0,flipped:false};
+  go('review');
+}
+function renderReviewView(el){
+  if(RS.i>=RS.items.length){
+    el.innerHTML=`<div class="stage-wrap fade-in" style="text-align:center;padding:40px 0">
+      <div style="font-size:56px">🧠</div>
+      <h2 style="font-size:22px;margin:14px 0 8px">复习完成！</h2>
+      <p class="muted" style="margin-bottom:20px">本轮复习 ${RS.items.length} 个单词，记住 ${RS.ok} 个。记忆曲线已更新 ✨</p>
+      <div style="display:flex;gap:12px;justify-content:center">
+        <button class="btn pri" onclick="go('dashboard')">返回首页</button>
+        <button class="btn ghost" onclick="startReview()">还有待复习？再来一轮</button>
+      </div>
+    </div>`;
+    return;
+  }
+  const w=RS.items[RS.i];
+  el.innerHTML=`<div class="stage-wrap fade-in">
+    <div class="stage-top">
+      <button class="back" onclick="go('dashboard')">← 退出复习</button>
+      <span class="small muted">🔔 复习 ${RS.i+1} / ${RS.items.length}</span>
+    </div>
+    <div class="fc-stage">
+      <div class="fc" id="fc" onclick="this.classList.toggle('flip')">
+        <div class="fc-face front">
+          <div class="fc-lang">${LANGS[w.lang].flag} 复习模式</div>
+          <div class="fc-word ${w.lang==='en'?'':'ja ko'}">${esc(w.w)}</div>
+          <div class="fc-hint">还记得它的意思吗？点击卡片看答案</div>
+        </div>
+        <div class="fc-face back">
+          <div class="fc-zh">${esc(w.zh)}</div>
+          <div class="fc-ex">${esc(w.ex)}<br><span style="opacity:.8;font-size:13px">${esc(w.exZh)}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-actions">
+      <button class="fc-btn red" onclick="reviewAnswer(0)">😵 忘了</button>
+      <button class="fc-btn green" onclick="reviewAnswer(1)">😄 记得</button>
+    </div>
+  </div>`;
+}
+function reviewAnswer(ok){
+  const w=RS.items[RS.i];
+  recordStat('vocab',!!ok); reviewSRS(w,!!ok);
+  if(ok){ RS.ok++; addXP(XP_PER.vocabReview,'复习巩固'); }
+  RS.i++; renderView();
+}
+</script>
+<script>
+/* ================= 图表（纯 SVG） ================= */
+function lineChartSvg(){
+  const days=[]; for(let i=13;i>=0;i--){ const d=daysAgo(i); days.push({d,v:(P().history[d]||0)}); }
+  const W=660,H=220,pL=36,pB=28,pT=16,pR=14;
+  const max=Math.max(40,...days.map(x=>x.v));
+  const px=i=>pL+i*(W-pL-pR)/13;
+  const py=v=>pT+(H-pT-pB)*(1-v/max);
+  const pts=days.map((x,i)=>px(i)+','+py(x.v)).join(' ');
+  const area='M'+px(0)+','+(H-pB)+' L'+days.map((x,i)=>px(i)+','+py(x.v)).join(' L ')+' L'+px(13)+','+(H-pB)+' Z';
+  const grid=[0,0.5,1].map(g=>{ const y=py(max*g);
+    return `<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="#e8eaf3" stroke-dasharray="4 4"/>
+    <text x="${pL-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#9aa0c0">${Math.round(max*g)}</text>`; }).join('');
+  const labels=days.map((x,i)=> i%2===0?`<text x="${px(i)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#9aa0c0">${x.d.slice(5)}</text>`:'').join('');
+  const dots=days.map((x,i)=>`<circle cx="${px(i)}" cy="${py(x.v)}" r="3.2" fill="#fff" stroke="#6366f1" stroke-width="2"><title>${x.d}：${x.v} XP</title></circle>`).join('');
+  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}">
+    <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366f1" stop-opacity=".28"/><stop offset="1" stop-color="#6366f1" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${grid}
+    <path d="${area}" fill="url(#lg)"/>
+    <polyline points="${pts}" fill="none" stroke="#6366f1" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}${labels}
+  </svg>`;
+}
+function heatmapSvg(){
+  let cells='';
+  for(let i=27;i>=0;i--){
+    const d=daysAgo(i), v=P().history[d]||0;
+    const lv=v===0?0:v<20?1:v<40?2:v<70?3:4;
+    cells+=`<div class="hm-cell l${lv}" title="${d}：${v} XP"></div>`;
+  }
+  return `<div class="hm">${cells}</div>
+  <div class="legend">少 <i style="background:#edeff8"></i><i style="background:#dcd7fb"></i><i style="background:#b1a7f5"></i><i style="background:#8b78ee"></i><i style="background:#5b5ef4"></i> 多</div>`;
+}
+
+/* ================= 学习进度页 ================= */
+function renderProgress(){
+  const p=P(), u=me();
+  const lv=levelOf(p.xp), nxt=nextLevelXp(p.xp);
+  const prev=LEVEL_T[lv-1]||0;
+  const modAcc=[['vocab','🃏 单词记忆','var(--ok)'],['grammar','✍️ 语法练习','var(--p1)'],['speak','🎤 口语跟读','var(--p3)'],['listen','🎧 听力训练','var(--warn)']];
+  return `
+  <div class="grid4" style="margin-bottom:18px">
+    <div class="stat-card"><div class="sc-ic" style="background:var(--warnbg)">🔥</div><div><div class="sc-num">${p.streak.c} 天</div><div class="sc-label">连续学习</div></div></div>
+    <div class="stat-card"><div class="sc-ic" style="background:#eef0ff">🎓</div><div><div class="sc-num">Lv.${lv}</div><div class="sc-label">${p.xp} / ${nxt} XP</div></div></div>
+    <div class="stat-card"><div class="sc-ic" style="background:var(--okbg)">📚</div><div><div class="sc-num">${wordsLearned()}</div><div class="sc-label">掌握单词</div></div></div>
+    <div class="stat-card"><div class="sc-ic" style="background:#fde7f3">🏅</div><div><div class="sc-num">${lessonsDoneCount()}</div><div class="sc-label">完成课程</div></div></div>
+  </div>
+  <div class="card" style="margin-bottom:18px">
+    <div class="card-h"><div class="t">📈 近 14 天学习曲线</div><span class="small muted">每日获得 XP</span></div>
+    ${lineChartSvg()}
+  </div>
+  <div class="grid2" style="margin-bottom:18px">
+    <div class="card">
+      <div class="card-h"><div class="t">🗓️ 学习热力图</div><span class="small muted">最近 28 天</span></div>
+      ${heatmapSvg()}
+      <div class="divider"></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="flex:1">
+          <div class="small muted" style="margin-bottom:6px">等级进度 Lv.${lv} → Lv.${lv+1}</div>
+          <div class="bar" style="height:10px"><div class="bar-i" style="width:${pct(p.xp-prev,nxt-prev)}%"></div></div>
+        </div>
+        <div class="small" style="font-weight:700">${pct(p.xp-prev,nxt-prev)}%</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="t">🎯 四大模块正确率</div></div>
+      ${modAcc.map(m=>{ const s=p.stats[m[0]]; const a=s.a?Math.round(s.c/s.a*100):0;
+        return `<div style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px"><span>${m[1]}</span><span class="muted small">${a}% · ${s.a} 题</span></div>
+          <div class="bar"><div class="bar-i" style="width:${a}%;background:${m[2]}"></div></div>
+        </div>`; }).join('')}
+      <div class="small muted" style="margin-top:4px">正确率低于 75% 的模块会出现在你的每日推荐中</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><div class="t">🌍 各语言进度</div><a class="small" style="cursor:pointer" onclick="go('courses')">去上课 →</a></div>
+    <div class="grid3">
+      ${LKEYS.map(k=>{
+        const lp=langProgress(k), LG=LANGS[k];
+        const anyDone=LKEYS.some(()=>Object.keys(p.lessons).some(lid=>lid.startsWith(k)));
+        return `<div style="border:1px solid var(--line);border-radius:14px;padding:16px">
+          <div style="font-size:24px">${LG.flag}</div>
+          <div style="font-weight:800;margin:6px 0 2px">${LG.name}</div>
+          <div class="small muted" style="margin-bottom:10px">${LG.levels[lp.lv].label} · 完成 ${lp.done}/${lp.total} 课</div>
+          <div class="bar"><div class="bar-i" style="width:${lp.pct}%;background:${LG.levels[lp.lv].color}"></div></div>
+        </div>`; }).join('')}
+    </div>
+  </div>`;
+}
+
+/* ================= 个性化推荐引擎 ================= */
+function buildRecs(){
+  const p=P(), u=me(), recs=[];
+  const langs=(u.langs&&u.langs.length?u.langs:LKEYS.slice(0,1));
+  // 1) 待复习单词（间隔重复到期）
+  const due=dueReviews();
+  if(due.length) recs.push({icon:'🔔',bg:'#fef4e2',lid:null,title:'复习 '+due.length+' 个单词',desc:'记忆曲线显示这批单词快忘了，趁现在巩固一下',btn:'去复习',action:'startReview()'});
+  // 2) 薄弱模块强化
+  const modsMeta={vocab:['单词记忆','🃏',0],grammar:['语法练习','✍️','#eef0ff'],speak:['口语跟读','🎤','#fde7f3'],listen:['听力训练','🎧','#fef4e2']};
+  const weak=MODS.map(m=>({m,acc:accOf(m),a:p.stats[m].a})).filter(x=>x.a>=5&&x.acc<0.75).sort((x,y)=>x.acc-y.acc)[0];
+  if(weak){
+    const cand=langs.map(lg=>{ const lp=langProgress(lg); return (COURSES[lg][lp.lv]||[]).find(l=>!lessonDone(l.id)); }).find(Boolean)||COURSES.en[0][0];
+    recs.push({icon:modsMeta[weak.m][1],bg:modsMeta[weak.m][2],lid:cand.id,title:'强化'+modsMeta[weak.m][0],desc:'你的'+modsMeta[weak.m][0]+'正确率 '+Math.round(weak.acc*100)+'%，推荐通过「'+cand.title+'」针对性练习',btn:'去强化',action:`startLesson('${cand.id}','${weak.m}')`});
+  }
+  // 3) 继续未完成的课 / 下一课
+  langs.forEach(lg=>{
+    const placed=p.placement[lg];
+    if(placed===undefined){
+      recs.push({icon:'🎯',bg:'#eef0ff',lid:null,title:LANGS[lg].name+'定级测试',desc:'花 1 分钟测一测，从最适合你的级别开始',btn:'去测试',action:`openPlacement('${lg}')`});
+    }
+    const lp=langProgress(lg);
+    const lessons=COURSES[lg][lp.lv]||[];
+    const nextLes=lessons.find(l=>!lessonDone(l.id));
+    if(nextLes){
+      const partial=p.lessons[nextLes.id]&&MODS.some(m=>p.lessons[nextLes.id][m]>0);
+      recs.push({icon:nextLes.icon,bg:'#e7f9f1',lid:nextLes.id,title:(partial?'继续学习：':'新课：')+nextLes.title,desc:LANGS[lg].flag+' '+LANGS[lg].levels[lp.lv].label+' · '+nextLes.desc,btn:partial?'继续':'开始学',action:`startLesson('${nextLes.id}')`});
+    }else if(lp.lv+1<COURSES[lg].length){
+      recs.push({icon:'🚀',bg:'#eef0ff',lid:null,title:'冲击 '+LANGS[lg].levels[lp.lv+1].label+'！',desc:'恭喜，当前级别课程已全部完成，是时候进阶了',btn:'去进阶',action:`go('courses')`});
+    }
+  });
+  // 4) 今日打卡提醒
+  if(p.streak.last!==today()&&(p.streak.c>0||p.history[today()]===undefined)&&recs.length<6){
+    recs.push({icon:'🔥',bg:'#fde7f3',lid:null,title:'保持连续打卡 '+p.streak.c+' 天',desc:'每天进步一点点，打断就可惜啦，从一节小课开始',btn:'去学习',action:`continueLesson()`});
+  }
+  return recs.slice(0,6);
+}
+
+/* ================= 学习路径页 ================= */
+function renderPath(){
+  const p=P(), u=me();
+  const langs=(u.langs&&u.langs.length?u.langs:LKEYS.slice(0,1));
+  const recs=buildRecs();
+  const due=dueReviews();
+  let html=`<div class="grid2" style="margin-bottom:18px">
+    <div class="card">
+      <div class="card-h"><div class="t">🧠 今日复习队列</div><span class="tag" style="background:#fef4e2;color:var(--warn)">间隔重复</span></div>
+      ${due.length?`<p class="muted small" style="margin-bottom:12px">有 ${due.length} 个单词到了最佳复习时间点，别让它们溜走～</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">${due.slice(0,8).map(w=>`<span class="chip" style="cursor:default">${LANGS[w.lang].flag} ${esc(w.w)}</span>`).join('')}${due.length>8?'<span class="chip" style="cursor:default">+'+(due.length-8)+'</span>':''}</div>
+        <button class="btn pri" onclick="startReview()">开始复习（约 ${Math.ceil(due.length*0.5)} 分钟）</button>`
+      :`<div class="empty" style="padding:20px"><div class="e-ic">✅</div>复习队列已清空，去学点新单词吧！</div>`}
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="t">✨ 为你推荐</div></div>
+      ${recs.map(r=>`<div class="rec-card" style="margin-bottom:10px">
+        <div class="rec-ic" style="background:${r.bg}">${r.icon}</div>
+        <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;margin-bottom:2px">${r.title}</div><div class="small muted">${r.desc}</div></div>
+        <button class="btn soft sm" onclick="${r.action}">${r.btn}</button>
+      </div>`).join('')}
+    </div>
+  </div>`;
+  langs.forEach(lg=>{
+    const LG=LANGS[lg], lv=p.curLevel[lg]||0, lessons=COURSES[lg][lv]||[];
+    const placed=p.placement[lg];
+    const firstUndone=lessons.find(l=>!lessonDone(l.id));
+    html+=`<div class="card" style="margin-bottom:18px">
+      <div class="card-h">
+        <div class="t">${LG.flag} ${LG.name} · ${LG.levels[lv].label} 学习路线</div>
+        ${placed===undefined?`<button class="btn soft sm" onclick="openPlacement('${lg}')">🎯 定级测试</button>`:
+          `<span class="tag" style="background:#eef0ff;color:var(--p1)">定级：${LG.levels[placed].label}</span>`}
+      </div>
+      <div class="road">
+        ${lessons.map((l,i)=>{
+          const done=lessonDone(l.id);
+          const cur=!done&&firstUndone&&l.id===firstUndone.id;
+          return `<div class="road-node ${done?'done':cur?'cur':''}">
+            <div class="rn-dot">${done?'✔':i+1}</div>
+            <div class="rn-card">
+              <div class="lr-icon" style="width:44px;height:44px;font-size:21px">${l.icon}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:700;font-size:14.5px">${esc(l.title)}</div>
+                <div class="small muted">${l.desc}</div>
+              </div>
+              ${done?'<span class="tag" style="background:var(--okbg);color:var(--ok)">已完成</span>':
+                `<button class="btn ${cur?'pri':'soft'} sm" onclick="startLesson('${l.id}')">${cur?'▶ 继续学习':'预习'}</button>`}
+            </div>
+          </div>`; }).join('')}
+        ${lv+1<COURSES[lg].length?`<div class="road-node"><div class="rn-dot">🔒</div>
+          <div class="rn-card" style="opacity:.65"><div class="lr-icon" style="width:44px;height:44px;font-size:21px">🚀</div>
+          <div style="flex:1"><div style="font-weight:700;font-size:14.5px">进阶：${LG.levels[lv+1].label}</div><div class="small muted">完成当前级别全部课程后解锁</div></div></div></div>`:''}
+      </div>
+    </div>`;
+  });
+  return html;
+}
+function bindPath(){}
+
+/* ================= 定级测试 ================= */
+let PT=null;
+function openPlacement(lang){
+  PT={lang,i:0,correct:0};
+  renderPlacementQ();
+}
+function renderPlacementQ(){
+  const qs=PLACEMENT[PT.lang], q=qs[PT.i];
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div style="font-weight:800;font-size:16px">🎯 ${LANGS[PT.lang].name}定级测试</div>
+      <button class="btn ghost sm" onclick="closeModal()">✕</button>
+    </div>
+    <div class="bar" style="margin-bottom:18px"><div class="bar-i" style="width:${pct(PT.i,qs.length)}%"></div></div>
+    <div class="small muted" style="margin-bottom:8px">第 ${PT.i+1} 题 / ${qs.length} 题</div>
+    <div class="q-title">${esc(q.q)}</div>
+    ${q.opts.map((o,i)=>`<div class="q-opt" onclick="placePick(${i})"><span class="ol">${'ABC'[i]}</span>${esc(o)}</div>`).join('')}
+  `,'modal-lg');
+}
+function placePick(i){
+  const qs=PLACEMENT[PT.lang];
+  if(i===qs[PT.i].a) PT.correct++;
+  PT.i++;
+  if(PT.i<qs.length) renderPlacementQ(); else placeResult();
+}
+function placeResult(){
+  const lang=PT.lang, score=PT.correct, n=PLACEMENT[lang].length;
+  const lv=score>=Math.ceil(n*0.85)?2:score>=Math.ceil(n*0.5)?1:0;
+  const p=P();
+  p.placement[lang]=lv; p.curLevel[lang]=lv; saveP();
+  courseTab.open[lang]=lv;
+  openModal(`
+    <div style="text-align:center;padding:10px 0">
+      <div style="font-size:54px">🎯</div>
+      <h3 style="font-size:20px;margin:12px 0 6px">测试完成！</h3>
+      <p class="muted" style="margin-bottom:14px">答对 ${score} / ${n} 题</p>
+      <div style="background:linear-gradient(135deg,#eef0ff,#fdeef8);border-radius:16px;padding:20px;margin-bottom:20px">
+        <div class="small muted" style="margin-bottom:6px">为你推荐的起点级别</div>
+        <div style="font-size:22px;font-weight:800">${LANGS[lang].flag} ${LANGS[lang].levels[lv].label}</div>
+        <div class="small muted" style="margin-top:8px">${lv===0?'别担心，每个高手都是从零开始的，我们会陪你打好地基 💪':lv===1?'有不错的底子！我们略过最基础的内容，直接进入正题':'底子很扎实！建议快速过一遍低级别内容查漏补缺，主攻进阶'}</div>
+      </div>
+      <button class="btn pri lg" onclick="closeModal();go('courses')">去上 ${LANGS[lang].levels[lv].label} 的课 →</button>
+    </div>
+  `);
+  confetti();
+}
+
+/* ================= 社区 ================= */
+function getPosts(){
+  let posts=DB.get('posts',null);
+  if(!posts){
+    posts=SEED_POSTS.map(s=>({id:s.id,name:s.name,avatar:s.avatar,tag:s.tag,text:s.text,ts:s.ts,likes:s.likes,likedBy:[],comments:s.comments||[]}));
+    DB.set('posts',posts);
+  }
+  return posts;
+}
+function savePosts(list){ DB.set('posts',list); }
+const POST_TAGS=['#学习打卡','#方法分享','#求助提问','#资源推荐','#闲聊灌水'];
+let cTag=POST_TAGS[0];
+function renderCommunity(){
+  const u=me(), posts=getPosts();
+  return `
+  <div class="card" style="margin-bottom:18px">
+    <div style="display:flex;gap:12px">
+      <div class="p-ava">${u.avatar}</div>
+      <div style="flex:1">
+        <textarea id="c-text" placeholder="分享你的学习心得、打卡成果，或者提个问题……" maxlength="500"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:10px">
+          <div class="chips">${POST_TAGS.map(t=>`<span class="chip ${t===cTag?'on':''}" data-tag="${t}" onclick="pickTag('${t}')">${t}</span>`).join('')}</div>
+          <button class="btn pri" onclick="publishPost()">✍️ 发布</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  ${posts.map(p=>{
+    const liked=p.likedBy.includes(u.uid);
+    return `<div class="post">
+      <div class="p-head">
+        <div class="p-ava">${p.avatar}</div>
+        <div style="flex:1"><div class="p-name">${esc(p.name)}</div><div class="p-time">${timeAgo(p.ts)}</div></div>
+        <span class="tag" style="background:#eef0ff;color:var(--p1)">${p.tag}</span>
+      </div>
+      <div class="p-body">${esc(p.text)}</div>
+      <div class="p-actions">
+        <button class="p-act ${liked?'on':''}" onclick="toggleLike('${p.id}')">${liked?'❤️':'🤍'} ${p.likes} 点赞</button>
+        <button class="p-act" onclick="focusComment('${p.id}')">💬 ${p.comments.length} 评论</button>
+      </div>
+      ${p.comments.map(c=>`<div class="c-item"><div class="p-ava">${c.avatar}</div>
+        <div><span style="font-weight:700">${esc(c.name)}</span><div class="c-bubble">${esc(c.text)}</div></div></div>`).join('')}
+      <div class="c-input">
+        <input id="ci-${p.id}" placeholder="友善评论，鼓励他人~" maxlength="140" onkeydown="if(event.key==='Enter')commentPost('${p.id}')">
+        <button class="btn soft sm" onclick="commentPost('${p.id}')">发送</button>
+      </div>
+    </div>`; }).join('')}`;
+}
+function pickTag(t){ cTag=t; renderView(); }
+function bindCommunity(){}
+function publishPost(){
+  const txt=EL('c-text').value.trim();
+  if(!txt){ toast('写点什么再发布吧','bad'); return; }
+  const u=me(), posts=getPosts();
+  posts.unshift({id:'p'+Date.now(),name:u.name,avatar:u.avatar,tag:cTag,text:txt,ts:Date.now(),likes:0,likedBy:[],comments:[]});
+  savePosts(posts);
+  const p=P(); p.community.posted=true; saveP();
+  EL('c-text').value='';
+  toast('发布成功！+10 XP','ok','🎉'); addXP(10,'社区发言');
+  renderView();
+}
+function toggleLike(id){
+  const u=me(), posts=getPosts();
+  const p=posts.find(x=>x.id===id); if(!p) return;
+  const i=p.likedBy.indexOf(u.uid);
+  if(i>=0){ p.likedBy.splice(i,1); p.likes=Math.max(0,p.likes-1); }
+  else{
+    p.likedBy.push(u.uid); p.likes++;
+    if(!P().community.liked){ P().community.liked=true; saveP(); }
+    checkBadges();
+  }
+  savePosts(posts); renderView();
+}
+function focusComment(id){ const el=EL('ci-'+id); if(el){ el.focus(); el.scrollIntoView({block:'center'}); } }
+function commentPost(id){
+  const input=EL('ci-'+id), txt=input.value.trim();
+  if(!txt){ toast('评论不能为空','bad'); return; }
+  const u=me(), posts=getPosts();
+  const p=posts.find(x=>x.id===id); if(!p) return;
+  p.comments.push({name:u.name,avatar:u.avatar,text:txt});
+  savePosts(posts);
+  toast('评论成功 +5 XP','ok'); addXP(5,'社区评论');
+  renderView(); setTimeout(()=>focusComment(id),50);
+}
+
+/* ================= 成就殿堂 ================= */
+function checkBadges(){
+  const p=P();
+  const conds={
+    welcome:()=>true,
+    first_lesson:()=>lessonsDoneCount()>=1,
+    streak3:()=>p.streak.c>=3,
+    streak7:()=>p.streak.c>=7,
+    vocab50:()=>wordsLearned()>=50,
+    grammar_ace:()=>Object.values(p.lessons).some(l=>l.grammar===100),
+    speak_first:()=>p.stats.speak.a>0,
+    listen_ear:()=>Object.values(p.lessons).some(l=>l.listen===100),
+    lesson5:()=>lessonsDoneCount()>=5,
+    community:()=>p.community.posted,
+    like_giver:()=>p.community.liked,
+    level5:()=>levelOf(p.xp)>=5,
+    polyglot:()=>LKEYS.filter(lg=>Object.keys(p.lessons).some(lid=>lid.startsWith(lg))).length>=2
+  };
+  BADGES.forEach(b=>{
+    if(!p.badges[b.id]&&conds[b.id]&&conds[b.id]()){
+      p.badges[b.id]=Date.now(); saveP();
+      toast('解锁成就「'+b.name+'」'+b.icon,'gold','🏆');
+    }
+  });
+}
+function renderAchievements(){
+  const p=P(), u=me();
+  const mine={name:u.name,avatar:u.avatar,xp:p.xp,isMe:true};
+  const all=[...LEADERS.map(l=>({...l})),mine].sort((a,b)=>b.xp-a.xp);
+  const unlocked=Object.keys(p.badges).length;
+  return `
+  <div class="hero-banner" style="margin-bottom:18px;background:linear-gradient(120deg,#f59e0b,#f97316 60%,#ec4899)">
+    <div><h2>🏆 成就殿堂</h2><p>已解锁 ${unlocked} / ${BADGES.length} 个成就 · 当前等级 Lv.${levelOf(p.xp)}</p></div>
+    <div style="text-align:center">${ringSvg(unlocked/BADGES.length)}<div class="small" style="margin-top:8px;opacity:.9">收集进度</div></div>
+  </div>
+  <div class="bd-grid" style="margin-bottom:20px">
+    ${BADGES.map(b=>{ const on=!!p.badges[b.id];
+      return `<div class="bd ${on?'on':''}">
+        <div class="bd-icon">${b.icon}</div>
+        <div class="bd-name">${b.name}</div>
+        <div class="bd-desc">${b.desc}</div>
+        ${on?'<div class="small" style="color:var(--warn);margin-top:6px">'+timeAgo(p.badges[b.id])+'获得</div>':'<div class="small muted" style="margin-top:6px">🔒 未解锁</div>'}
+      </div>`; }).join('')}
+  </div>
+  <div class="card">
+    <div class="card-h"><div class="t">🔥 学霸排行榜</div><span class="small muted">按累计 XP 排名</span></div>
+    ${all.map((l,i)=>`<div class="lb-row" style="${l.isMe?'background:#f4f2ff;border-radius:12px':''}">
+      <div class="lb-rank r${i+1}">${i+1<=3?['🥇','🥈','🥉'][i]:i+1}</div>
+      <div class="p-ava" style="width:36px;height:36px;font-size:18px">${l.avatar}</div>
+      <div style="flex:1;font-weight:700;font-size:14px">${esc(l.name)}${l.isMe?' <span class="tag" style="background:var(--p1);color:#fff">我</span>':''}</div>
+      <div class="small muted">Lv.${levelOf(l.xp)}</div>
+      <div style="font-weight:800;font-size:14px;color:var(--p1);width:90px;text-align:right">⚡ ${l.xp} XP</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+/* ================= 个人中心 ================= */
+function renderProfile(){
+  const u=me(), p=P(), lv=levelOf(p.xp), nxt=nextLevelXp(p.xp), prev=LEVEL_T[lv-1]||0;
+  return `
+  <div class="card" style="margin-bottom:18px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+    <div class="p-ava" style="width:76px;height:76px;font-size:38px">${u.avatar}</div>
+    <div style="flex:1;min-width:220px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-size:20px;font-weight:800">${esc(u.name)}</span>
+        <span class="tag" style="background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff">Lv.${lv}</span></div>
+      <div class="small muted" style="margin:6px 0 10px">${u.email} · ${timeAgo(u.created)}加入 · 已连续学习 ${p.streak.c} 天</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="flex:1"><div class="bar" style="height:10px"><div class="bar-i" style="width:${pct(p.xp-prev,nxt-prev)}%"></div></div></div>
+        <span class="small muted">${p.xp}/${nxt} XP</span>
+      </div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h"><div class="t">🎯 学习偏好</div></div>
+      <div class="field"><label>每日 XP 目标</label><div class="chips">
+        ${GOALS.map(g=>`<span class="chip ${p.goal===g?'on':''}" onclick="setGoal(${g})">${g} XP</span>`).join('')}
+      </div></div>
+      <div class="field" style="margin-bottom:0"><label>在学习语言</label><div class="chips">
+        ${LKEYS.map(k=>`<span class="chip ${(u.langs||[]).includes(k)?'on':''}" onclick="toggleLang('${k}')">${LANGS[k].flag} ${LANGS[k].name}</span>`).join('')}
+      </div></div>
+      <div class="divider"></div>
+      <label style="font-size:13px;font-weight:600">更换头像</label>
+      <div class="ava-row" style="margin-top:8px">
+        ${AVATARS.map(a=>`<div class="ava-pick ${a===u.avatar?'on':''}" onclick="setAvatar('${a}')">${a}</div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="t">📐 能力定级</div></div>
+      ${LKEYS.map(k=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)">
+        <span style="font-weight:600;font-size:14px">${LANGS[k].flag} ${LANGS[k].name}</span>
+        <span style="display:flex;gap:8px;align-items:center">
+          <span class="small muted">${p.placement[k]!==undefined?'已定级：'+LANGS[k].levels[p.placement[k]].label:'未测试'}</span>
+          <button class="btn ghost sm" onclick="openPlacement('${k}')">${p.placement[k]!==undefined?'重测':'测试'}</button>
+        </span></div>`).join('')}
+      <div class="divider"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn soft" onclick="resetProgress()">🔄 重置学习进度</button>
+        <button class="btn danger" onclick="logout()">🚪 退出登录</button>
+      </div>
+      <div class="small muted" style="margin-top:12px">重置仅清空学习数据（课程进度、XP、成就），账号保留。</div>
+    </div>
+  </div>`;
+}
+function bindProfile(){}
+function setGoal(g){ P().goal=g; saveP(); toast('每日目标已设为 '+g+' XP','ok'); renderView(); }
+function toggleLang(k){
+  const u=me();
+  u.langs=u.langs||[];
+  if(u.langs.includes(k)){ if(u.langs.length>1) u.langs=u.langs.filter(x=>x!==k); else { toast('至少保留一门语言','bad'); return; } }
+  else u.langs.push(k);
+  saveMe(); toast('已更新学习语言','ok'); renderView();
+}
+function setAvatar(a){ me().avatar=a; saveMe(); toast('头像已更新','ok','✨'); renderView(); }
+function resetProgress(){
+  openModal(`<div style="text-align:center;padding:8px 0">
+    <div style="font-size:44px">⚠️</div>
+    <h3 style="margin:12px 0 8px">确认重置学习进度？</h3>
+    <p class="muted small" style="margin-bottom:20px">课程进度、XP、成就、复习计划将全部清空，此操作不可恢复。</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn ghost" onclick="closeModal()">取消</button>
+      <button class="btn danger" onclick="doReset()">确认重置</button>
+    </div></div>`);
+}
+function doReset(){
+  DB.set('prog_'+me().uid,newProgress());
+  _p=null; ensureProgress(); closeModal();
+  toast('学习进度已重置'); go('dashboard');
+}
+
+/* ================= 启动 ================= */
+function boot(){
+  ensureDemoUser();
+  const sid=DB.get('session',null);
+  if(sid){
+    const users=DB.get('users',{});
+    const u=Object.values(users).find(x=>x.uid===sid);
+    if(u){ _me=u; ensureProgress(); checkBadges(); enterApp(); return; }
+  }
+  renderAuth('login');
+}
+boot();
+</script>
+
+</body>
+</html>
