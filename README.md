@@ -5,6 +5,8 @@
 
 `单文件` · `零依赖` · `原生 HTML / CSS / JavaScript` · `离线可用` · `MIT License`
 
+🔗 **在线体验**：[https://clyde-ux.github.io/lingauleap/](https://clyde-ux.github.io/lingauleap/) · 打开即用，推荐 Chrome / Edge
+
 ---
 
 ## 📖 项目简介
@@ -172,10 +174,11 @@
 
 ## 🏁 快速开始
 
-本项目**无需构建、无需安装依赖**，两种方式任选其一：
+本项目**无需构建、无需安装依赖**，三种方式任选其一：
 
-- **方式一：直接打开** —— 双击 `index.html`，用浏览器打开即可，适合快速预览界面与流程。
-- **方式二：本地静态服务（推荐）** —— 语音识别需要安全上下文（`localhost` 或 HTTPS），通过本地服务访问体验最完整：
+- **方式一：在线体验（最快）** —— 直接用浏览器打开 [https://clyde-ux.github.io/lingauleap/](https://clyde-ux.github.io/lingauleap/)，无需下载，推荐最新版 Chrome / Edge；
+- **方式二：直接打开** —— 双击 `index.html`，用浏览器打开即可，适合快速预览界面与流程；
+- **方式三：本地静态服务（推荐，语音功能最完整）** —— 语音识别需要安全上下文（`localhost` 或 HTTPS），通过本地服务访问体验最完整：
 
 ```bash
 # 进入项目目录后启动一个静态服务器
